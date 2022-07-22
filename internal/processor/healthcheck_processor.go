@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/NganJason/ChatGroup-BE/internal/vo"
 	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
+	"github.com/NganJason/ChatGroup-BE/vo"
 	"google.golang.org/protobuf/proto"
 )
 

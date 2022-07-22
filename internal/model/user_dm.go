@@ -10,10 +10,10 @@ type UserDM struct {
 	ctx context.Context
 }
 
-func NewUserDM(ctx context.Context) User {
+func NewUserDM(ctx context.Context) (User, error) {
 	return &UserDM{
 		ctx: ctx,
-	}
+	}, nil
 }
 
 func (dm *UserDM) GetUser(

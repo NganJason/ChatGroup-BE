@@ -13,8 +13,8 @@ type AuthLoginRequest struct {
 }
 
 type AuthLoginResponse struct {
-	DebugMsg *string   `json:"debug_msg"`
-	UserInfo *UserInfo `json:"user_info"`
+	DebugMsg *string `json:"debug_msg"`
+	User     *User   `json:"user_info"`
 }
 
 type AuthSignupRequest struct {
@@ -23,15 +23,15 @@ type AuthSignupRequest struct {
 }
 
 type AuthSignupResponse struct {
-	DebugMsg *string   `json:"debug_msg"`
-	UserInfo *UserInfo `json:"user_info"`
+	DebugMsg *string `json:"debug_msg"`
+	User     *User   `json:"user_info"`
 }
 
 type GetUserInfoRequest struct{}
 
 type GetUserInfoResponse struct {
-	DebugMsg *string   `json:"debug_msg"`
-	UserInfo *UserInfo `json:"user_info"`
+	DebugMsg *string `json:"debug_msg"`
+	UserInfo *User   `json:"user_info"`
 }
 
 type GetUserChannelsRequest struct{}
@@ -59,8 +59,8 @@ type GetChannelMembersRequest struct {
 }
 
 type GetChannelMembersResponse struct {
-	DebugMsg *string    `json:"debug_msg"`
-	Members  []UserInfo `json:"members"`
+	DebugMsg *string `json:"debug_msg"`
+	Members  []User  `json:"members"`
 }
 
 type CreateMessageRequest struct {
@@ -72,7 +72,7 @@ type CreateMessageResponse struct {
 	DebugMsg *string `json:"debug_msg"`
 }
 
-type UserInfo struct {
+type User struct {
 	UserID       *uint64 `json:"user_id"`
 	UserName     *string `json:"user_name"`
 	EmailAddress *string `json:"email_address"`
@@ -87,9 +87,9 @@ type Channel struct {
 }
 
 type Message struct {
-	MessageID  *uint64   `json:"message_id"`
-	ChannelID  *uint64   `json:"channel_id"`
-	Content    *string   `json:"content"`
-	CreatedAt  *uint64   `json:"created_at"`
-	SenderInfo *UserInfo `json:"sender_info"`
+	MessageID *uint64 `json:"message_id"`
+	ChannelID *uint64 `json:"channel_id"`
+	Content   *string `json:"content"`
+	CreatedAt *uint64 `json:"created_at"`
+	Sender    *User   `json:"sender"`
 }

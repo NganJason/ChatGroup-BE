@@ -1,9 +1,8 @@
 package db
 
-type UserInfo struct {
+type User struct {
 	UserID         *uint64 `json:"user_id"`
 	UserName       *string `json:"user_name"`
-	Password       *string `json:"password"`
 	HashedPassword *string `json:"hashed_password"`
 	Salt           *string `json:"salt"`
 	EmailAddress   *string `json:"email_address"`

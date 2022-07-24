@@ -256,7 +256,7 @@ func (dm *UserDM) UpdateUser(req *UpdateUserReq) (user *db.User, err error) {
 
 	updateQuery := fmt.Sprintf(
 		`
-		UPDATE %S
+		UPDATE %s
 		SET user_name = ?, hashed_password = ?, salt = ?, email_address = ?, photo_url = ?
 		WHERE user_id = ?,
 		`,

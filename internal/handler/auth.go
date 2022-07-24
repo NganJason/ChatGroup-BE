@@ -33,6 +33,7 @@ func (h *AuthHandler) Login(
 	user, err := h.userDM.GetUser(
 		nil,
 		userName,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -68,6 +69,7 @@ func (h *AuthHandler) Signup(
 	existingUser, err := h.userDM.GetUser(
 		nil,
 		userName,
+		nil,
 	)
 	if err != nil {
 		return nil, err

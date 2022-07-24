@@ -9,9 +9,7 @@ type UserQuery struct {
 }
 
 func NewUserQuery() *UserQuery {
-	return &UserQuery{
-		userIDs: make([]*uint64, 0),
-	}
+	return &UserQuery{}
 }
 
 func (q *UserQuery) ID(

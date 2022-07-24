@@ -29,18 +29,18 @@ func (dm *UserDM) GetUser(
 	userName *string,
 	id *uint64,
 ) (user *db.User, err error) {
-	query := query.NewUserQuery()
+	q := query.NewUserQuery()
 
 	if userID != nil {
-		query.UserID(userID)
+		q.UserID(userID)
 	}
 
 	if userName != nil {
-		query.UserName(userName)
+		q.UserName(userName)
 	}
 
 	if id != nil {
-		query.ID(id)
+		q.ID(id)
 	}
 
 	baseQuery := fmt.Sprintf(
@@ -48,7 +48,7 @@ func (dm *UserDM) GetUser(
 		dm.getTableName(),
 	)
 
-	wheres, args := query.Build()
+	wheres, args := q.Build()
 
 	err = dm.db.QueryRow(
 		baseQuery+wheres,
@@ -91,8 +91,8 @@ func (dm *UserDM) GetUsers(userIDs []*uint64) (users []*db.User, err error) {
 		dm.getTableName(),
 	)
 
-	query := query.NewUserQuery().UserIDs(userIDs)
-	wheres, args := query.Build()
+	q := query.NewUserQuery().UserIDs(userIDs)
+	wheres, args := q.Build()
 
 	rows, err := dm.db.Query(
 		baseQuery+wheres,
@@ -136,7 +136,7 @@ func (dm *UserDM) GetUsers(userIDs []*uint64) (users []*db.User, err error) {
 }
 
 func (dm *UserDM) CreateUser(req *CreateUserReq) (user *db.User, err error) {
-	query := fmt.Sprintf(
+	q := fmt.Sprintf(
 		`
 		INSERT INTO %s 
 		(user_id, user_name, hashed_password, salt, email_address, photo_url) 
@@ -145,7 +145,7 @@ func (dm *UserDM) CreateUser(req *CreateUserReq) (user *db.User, err error) {
 	)
 
 	result, err := dm.db.Exec(
-		query,
+		q,
 		req.UserID,
 		req.UserName,
 		req.HashedPassword,
@@ -198,8 +198,8 @@ func (dm *UserDM) UpdateUser(req *UpdateUserReq) (user *db.User, err error) {
 		dm.getTableName(),
 	)
 
-	query := query.NewUserQuery().UserID(utils.Uint64Ptr(req.UserID))
-	wheres, args := query.Build()
+	q := query.NewUserQuery().UserID(utils.Uint64Ptr(req.UserID))
+	wheres, args := q.Build()
 	finalQuery := baseQuery + wheres + "FOR UPDATE"
 
 	var existingUser *db.User

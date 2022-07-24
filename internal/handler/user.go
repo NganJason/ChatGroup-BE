@@ -24,7 +24,7 @@ func NewUserHandler(
 }
 
 func (h *UserHandler) GetUser(userID *uint64) (userVo *vo.User, err error) {
-	user, err := h.userDM.GetUser(userID, nil)
+	user, err := h.userDM.GetUser(userID, nil, nil)
 	if err != nil {
 		return nil, err
 	}

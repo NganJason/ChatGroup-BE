@@ -169,7 +169,7 @@ func (dm *UserDM) CreateUser(req *CreateUserReq) (user *db.User, err error) {
 	)
 	if err != nil {
 		return nil, cerr.New(
-			fmt.Sprintf("refetch user from db err=%s", err.Error(0)),
+			fmt.Sprintf("refetch user from db err=%s", err.Error()),
 			http.StatusBadGateway,
 		)
 	}

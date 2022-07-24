@@ -24,3 +24,22 @@ func (dm *ChannelDM) GetChannels(
 ) {
 	return nil, nil
 }
+
+func (dm *ChannelDM) GetChannel(
+	channelID *uint64,
+	channelName *string,
+) (
+	channel *db.Channel,
+	err error,
+) {
+	return nil, nil
+}
+
+func (dm *ChannelDM) CreateChannel(
+	req *CreateChannelReq,
+) (
+	channel *db.Channel,
+	err error,
+) {
+	return nil, nil
+}

@@ -26,17 +26,21 @@ func DBUsersToVo(dbUsers []*db.User) []vo.User {
 	return voUsers
 }
 
-func DBChannelToVo(dbChannels []*db.Channel) []vo.Channel {
+func DBChannelToVo(dbChannel *db.Channel) *vo.Channel {
+	return &vo.Channel{
+		ChannelID:   dbChannel.ChannelID,
+		ChannelName: dbChannel.ChannelName,
+		ChannelDesc: dbChannel.ChannelDesc,
+	}
+}
+
+func DBChannelsToVo(dbChannels []*db.Channel) []vo.Channel {
 	voChannels := make([]vo.Channel, len(dbChannels))
 
 	for i := 0; i < len(dbChannels); i++ {
 		dbChannel := dbChannels[i]
 
-		voChannels[i] = vo.Channel{
-			ChannelID:   dbChannel.ChannelID,
-			ChannelName: dbChannel.ChannelName,
-			ChannelDesc: dbChannel.ChannelDesc,
-		}
+		voChannels[i] = *DBChannelToVo(dbChannel)
 	}
 
 	return voChannels

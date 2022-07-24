@@ -19,7 +19,17 @@ func (dm *UserChannelDM) GetUserChannels(
 	userID *uint64,
 	channelID *uint64,
 ) (
-	userChannels []db.UserChannel,
+	userChannels []*db.UserChannel,
+	err error,
+) {
+	return nil, nil
+}
+
+func (dm *UserChannelDM) CreateUserChannel(
+	channelID *uint64,
+	userIDs []*uint64,
+) (
+	userChannels []*db.UserChannel,
 	err error,
 ) {
 	return nil, nil

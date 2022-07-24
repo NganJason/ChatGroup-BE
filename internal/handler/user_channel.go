@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+
 	"github.com/NganJason/ChatGroup-BE/internal/model"
 	"github.com/NganJason/ChatGroup-BE/internal/utils"
 	"github.com/NganJason/ChatGroup-BE/vo"
@@ -57,7 +58,7 @@ func (h *UserChannelHandler) GetUserChannels(
 		return nil, err
 	}
 
-	return utils.DBChannelToVo(channels), nil
+	return utils.DBChannelsToVo(channels), nil
 }
 
 // Todo: Implement pagination

@@ -15,7 +15,7 @@ import (
 
 type UserDM struct {
 	ctx context.Context
-	db *sql.DB
+	db  *sql.DB
 }
 
 func NewUserDM(ctx context.Context) (User, error) {
@@ -51,7 +51,7 @@ func (dm *UserDM) GetUser(
 	wheres, args := query.Build()
 
 	err = dm.db.QueryRow(
-		baseQuery + wheres,
+		baseQuery+wheres,
 		args...,
 	).Scan(
 		&user.ID,
@@ -78,8 +78,8 @@ func (dm *UserDM) GetUser(
 	return user, nil
 }
 
-func (dm *UserDM) GetUsers(userIDs []*uint64) (users []*db.User, err error) {	
-	if (len(userIDs) == 0) {
+func (dm *UserDM) GetUsers(userIDs []*uint64) (users []*db.User, err error) {
+	if len(userIDs) == 0 {
 		return nil, cerr.New(
 			"userIDs cannot be empty",
 			http.StatusBadRequest,
@@ -95,7 +95,7 @@ func (dm *UserDM) GetUsers(userIDs []*uint64) (users []*db.User, err error) {
 	wheres, args := query.Build()
 
 	rows, err := dm.db.Query(
-		baseQuery + wheres,
+		baseQuery+wheres,
 		args...,
 	)
 	if err != nil {
@@ -132,7 +132,6 @@ func (dm *UserDM) GetUsers(userIDs []*uint64) (users []*db.User, err error) {
 		users = append(users, user)
 	}
 
-
 	return users, nil
 }
 
@@ -163,8 +162,8 @@ func (dm *UserDM) CreateUser(req *CreateUserReq) (user *db.User, err error) {
 	lastInsertID, _ := result.LastInsertId()
 
 	user, err = dm.GetUser(
-		nil, 
-		nil, 
+		nil,
+		nil,
 		utils.Uint64Ptr(uint64(lastInsertID)),
 	)
 	if err != nil {
@@ -217,7 +216,7 @@ func (dm *UserDM) UpdateUser(req *UpdateUserReq) (user *db.User, err error) {
 		&existingUser.Salt,
 		&existingUser.PhotoURL,
 		&existingUser.CreatedAt,
-		&existingUser.UpdatedAt,	
+		&existingUser.UpdatedAt,
 	)
 	if err != nil {
 		return nil, cerr.New(
@@ -254,7 +253,7 @@ func (dm *UserDM) UpdateUser(req *UpdateUserReq) (user *db.User, err error) {
 	}
 
 	existingUser.UpdatedAt = time.Now()
-	
+
 	updateQuery := fmt.Sprintf(
 		`
 		UPDATE %S

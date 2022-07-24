@@ -86,7 +86,7 @@ func (h *AuthHandler) Signup(
 	)
 
 	req := &model.CreateUserReq{
-		UserID: h.generateUserID(),
+		UserID:         h.generateUserID(),
 		UserName:       *userName,
 		HashedPassword: hashedPassword,
 		Salt:           salt,

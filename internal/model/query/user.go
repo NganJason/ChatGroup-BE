@@ -3,9 +3,9 @@ package query
 import "strings"
 
 type UserQuery struct {
-	userIDs []*uint64
+	userIDs   []*uint64
 	userNames []*string
-	id *uint64
+	id        *uint64
 }
 
 func NewUserQuery() *UserQuery {
@@ -14,7 +14,7 @@ func NewUserQuery() *UserQuery {
 	}
 }
 
-func (q *UserQuery) ID (
+func (q *UserQuery) ID(
 	id *uint64,
 ) *UserQuery {
 	q.id = id
@@ -55,7 +55,7 @@ func (q *UserQuery) Build() (wheres string, args []interface{}) {
 		whereCols = append(whereCols, "id = ?")
 		args = append(args, *q.id)
 	}
-	
+
 	if len(q.userIDs) != 0 {
 		inCondition := "user_id IN (?"
 

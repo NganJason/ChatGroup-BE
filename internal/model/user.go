@@ -10,7 +10,7 @@ type User interface {
 }
 
 type CreateUserReq struct {
-	UserID		   *uint64
+	UserID         *uint64
 	UserName       string
 	HashedPassword string
 	Salt           string
@@ -19,7 +19,7 @@ type CreateUserReq struct {
 }
 
 type UpdateUserReq struct {
-	UserID		   uint64
+	UserID         uint64
 	UserName       *string
 	HashedPassword *string
 	Salt           *string

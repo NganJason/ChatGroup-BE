@@ -66,6 +66,7 @@ func (h *ChannelHandler) CreateChannel(
 		[]*uint64{
 			creatorID,
 		},
+		nil,
 	)
 	if err != nil {
 		return nil, err

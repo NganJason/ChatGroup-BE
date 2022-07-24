@@ -84,13 +84,13 @@ type CreateMessageResponse struct {
 	Message  *Message `json:"message"`
 }
 
-type AddUserToChannelRequest struct {
+type AddUsersToChannelRequest struct {
 	ChannelID *uint64   `json:"channel_id"`
 	UserIDs   []*uint64 `json:"user_ids"`
-	UserNames []*uint64 `json:"user_names"`
+	UserNames []*string `json:"user_names"`
 }
 
-type AddUserToChannelResponse struct {
+type AddUsersToChannelResponse struct {
 	DebugMsg *string `json:"debug_msg"`
 }
 

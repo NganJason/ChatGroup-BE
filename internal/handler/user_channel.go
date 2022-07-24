@@ -87,3 +87,16 @@ func (h *UserChannelHandler) GetChannelUsers(
 
 	return utils.DBUsersToVo(users), nil
 }
+
+func (h *UserChannelHandler) AddUsersToChannel(
+	channelID *uint64,
+	userIDs []*uint64,
+	userNames []*string,
+) error {
+	_, err := h.userChannelDM.CreateUserChannel(channelID, userIDs, userNames)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

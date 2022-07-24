@@ -28,6 +28,7 @@ func (dm *UserChannelDM) GetUserChannels(
 func (dm *UserChannelDM) CreateUserChannel(
 	channelID *uint64,
 	userIDs []*uint64,
+	userNames []*string,
 ) (
 	userChannels []*db.UserChannel,
 	err error,

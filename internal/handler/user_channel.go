@@ -24,6 +24,18 @@ func NewUserChannelHandler(
 	}
 }
 
+func (h *UserChannelHandler) SetChannelDM(
+	channelDM model.Channel,
+) {
+	h.channelDM = channelDM
+}
+
+func (h *UserChannelHandler) SetUserDM(
+	userDM model.User,
+) {
+	h.userDM = userDM
+}
+
 func (h *UserChannelHandler) GetUserChannels(
 	userID *uint64,
 ) (

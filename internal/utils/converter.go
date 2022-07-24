@@ -42,27 +42,33 @@ func DBChannelToVo(dbChannels []*db.Channel) []vo.Channel {
 	return voChannels
 }
 
+func DBMessageToVo(dbMessage *db.Message, dbUserIDMap map[uint64]*db.User) *vo.Message {
+	voMessage := &vo.Message{
+		MessageID: dbMessage.MessageID,
+		ChannelID: dbMessage.ChannelID,
+		Content:   dbMessage.Content,
+		CreatedAt: dbMessage.CreatedAt,
+	}
+
+	if _, ok := dbUserIDMap[*dbMessage.UserID]; !ok {
+		return voMessage
+	}
+
+	dbUser := dbUserIDMap[*dbMessage.UserID]
+	voUser := DBUserToVo(dbUser)
+
+	voMessage.Sender = voUser
+
+	return voMessage
+}
+
 func DBMessagesToVo(dbMessages []*db.Message, dbUserIDMap map[uint64]*db.User) []vo.Message {
 	voMessages := make([]vo.Message, len(dbMessages))
 
 	for i := 0; i < len(dbMessages); i++ {
 		dbMessage := dbMessages[i]
 
-		voMessages[i] = vo.Message{
-			MessageID: dbMessage.MessageID,
-			ChannelID: dbMessage.ChannelID,
-			Content:   dbMessage.Content,
-			CreatedAt: dbMessage.CreatedAt,
-		}
-
-		if _, ok := dbUserIDMap[*dbMessage.UserID]; !ok {
-			continue
-		}
-
-		dbUser := dbUserIDMap[*dbMessage.UserID]
-		voUser := DBUserToVo(dbUser)
-
-		voMessages[i].Sender = voUser
+		voMessages[i] = *DBMessageToVo(dbMessage, dbUserIDMap)
 	}
 
 	return voMessages

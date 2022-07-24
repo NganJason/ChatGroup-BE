@@ -35,7 +35,11 @@ func (h *MessageHandler) GetMessagesByChannelID(
 	voMessages []vo.Message,
 	err error,
 ) {
-	messages, err := h.messageDM.GetMessages(channelID, fromTime, toTime)
+	messages, err := h.messageDM.GetMessages(
+		channelID,
+		fromTime,
+		toTime,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -45,9 +49,35 @@ func (h *MessageHandler) GetMessagesByChannelID(
 		return nil, err
 	}
 
-	voMessages = utils.DBMessagesToVo(messages, userIDMap)
+	voMessages = utils.DBMessagesToVo(
+		messages,
+		userIDMap,
+	)
 
 	return voMessages, nil
+}
+
+func (h *MessageHandler) CreateMessage(
+	channelID *uint64,
+	content *string,
+) (
+	*vo.Message,
+	error,
+) {
+	message, err := h.messageDM.CreateMessage(
+		channelID,
+		content,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	userIDMap, err := h.userIDMapFromMessages([]*db.Message{message})
+	if err != nil {
+		return nil, err
+	}
+
+	return utils.DBMessageToVo(message, userIDMap), nil
 }
 
 func (h *MessageHandler) userIDMapFromMessages(messages []*db.Message) (map[uint64]*db.User, error) {

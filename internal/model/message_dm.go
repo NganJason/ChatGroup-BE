@@ -26,3 +26,13 @@ func (dm *MessageDM) GetMessages(
 ) {
 	return nil, nil
 }
+
+func (dm *MessageDM) CreateMessage(
+	channelID *uint64,
+	content *string,
+) (
+	message *db.Message,
+	err error,
+) {
+	return nil, nil
+}

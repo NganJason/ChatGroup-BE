@@ -68,10 +68,16 @@ func (p *getUserChannelsProcessor) process() error {
 		return err
 	}
 
+	channelDM, err := model.NewChannelDM(p.ctx)
+	if err != nil {
+		return err
+	}
+
 	h := handler.NewUserChannelHandler(
 		p.ctx,
 		userChannelDM,
 	)
+	h.SetChannelDM(channelDM)
 
 	channels, err := h.GetUserChannels(p.userID)
 	if err != nil {

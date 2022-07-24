@@ -11,12 +11,12 @@ import (
 	"github.com/NganJason/ChatGroup-BE/vo"
 )
 
-func GetChannelMembersProcessor(
+func CreateMessageProcessor(
 	ctx context.Context,
 	req,
 	resp interface{},
 ) error {
-	request, ok := resp.(*vo.GetChannelMembersRequest)
+	request, ok := resp.(*vo.CreateMessageRequest)
 	if !ok {
 		return cerr.New(
 			"convert request body error",
@@ -24,7 +24,7 @@ func GetChannelMembersProcessor(
 		)
 	}
 
-	response, ok := resp.(*vo.GetChannelMembersResponse)
+	response, ok := resp.(*vo.CreateMessageResponse)
 	if !ok {
 		return cerr.New(
 			"convert response body error",
@@ -32,7 +32,7 @@ func GetChannelMembersProcessor(
 		)
 	}
 
-	p := getUserChannelMembersProcessor{
+	p := createMessageProcessor{
 		ctx:  ctx,
 		req:  request,
 		resp: response,
@@ -41,13 +41,13 @@ func GetChannelMembersProcessor(
 	return p.process()
 }
 
-type getUserChannelMembersProcessor struct {
+type createMessageProcessor struct {
 	ctx  context.Context
-	req  *vo.GetChannelMembersRequest
-	resp *vo.GetChannelMembersResponse
+	req  *vo.CreateMessageRequest
+	resp *vo.CreateMessageResponse
 }
 
-func (p *getUserChannelMembersProcessor) process() error {
+func (p *createMessageProcessor) process() error {
 	err := p.validateReq()
 	if err != nil {
 		return cerr.New(
@@ -56,47 +56,42 @@ func (p *getUserChannelMembersProcessor) process() error {
 		)
 	}
 
-	userChannelDM, err := model.NewUserChannelDM(p.ctx)
-	if err != nil {
-		return err
-	}
-
 	userDM, err := model.NewUserDM(p.ctx)
 	if err != nil {
 		return err
 	}
 
-	h := handler.NewUserChannelHandler(
-		p.ctx,
-		userChannelDM,
-	)
-	h.SetUserDM(userDM)
+	messageDM, err := model.NewMessageDM(p.ctx)
+	if err != nil {
+		return err
+	}
 
-	users, err := h.GetChannelUsers(
+	h := handler.NewMessageHandler(
+		p.ctx,
+		messageDM,
+		userDM,
+	)
+
+	message, err := h.CreateMessage(
 		p.req.ChannelID,
-		p.req.PageSize,
-		p.req.PageNumber,
+		p.req.Content,
 	)
 	if err != nil {
 		return err
 	}
 
-	p.resp.Members = users
+	p.resp.Message = message
 
 	return nil
 }
 
-func (p *getUserChannelMembersProcessor) validateReq() error {
+func (p *createMessageProcessor) validateReq() error {
 	if p.req.ChannelID == nil || *p.req.ChannelID == 0 {
 		return fmt.Errorf("channelID cannot be empty")
 	}
 
-	if p.req.PageSize == nil || *p.req.PageSize == 0 {
+	if p.req.Content == nil || *p.req.Content == "" {
 		return fmt.Errorf("pageSize cannot be empty")
-	}
-
-	if p.req.PageNumber == nil || *p.req.PageNumber == 0 {
-		return fmt.Errorf("pageNumber cannot be empty")
 	}
 
 	return nil

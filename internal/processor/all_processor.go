@@ -40,9 +40,10 @@ func GetAllProcessors() []ProcessorConfig {
 			Resp:      vo.GetUserInfoResponse{},
 		},
 		{
-			Path: "/api/user/channels",
-			Req:  vo.GetUserChannelsRequest{},
-			Resp: vo.GetUserChannelsResponse{},
+			Path:      "/api/user/channels",
+			Processor: GetUserChannelsProcessor,
+			Req:       vo.GetUserChannelsRequest{},
+			Resp:      vo.GetUserChannelsResponse{},
 		},
 		{
 			Path: "/api/channel/messages",

@@ -58,7 +58,7 @@ func (h *AuthHandler) Login(
 		)
 	}
 
-	return utils.UserDBToVo(user), nil
+	return utils.DBUserToVo(user), nil
 }
 
 func (h *AuthHandler) Signup(
@@ -96,5 +96,5 @@ func (h *AuthHandler) Signup(
 		return nil, err
 	}
 
-	return utils.UserDBToVo(newUser), nil
+	return utils.DBUserToVo(newUser), nil
 }

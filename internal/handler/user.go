@@ -29,5 +29,5 @@ func (h *UserHandler) GetUser(userID *uint64) (userVo *vo.User, err error) {
 		return nil, err
 	}
 
-	return utils.UserDBToVo(user), nil
+	return utils.DBUserToVo(user), nil
 }

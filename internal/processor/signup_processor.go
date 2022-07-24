@@ -13,7 +13,7 @@ import (
 	"github.com/NganJason/ChatGroup-BE/vo"
 )
 
-func SignupPorcessor(ctx context.Context, req, resp interface{}) error {
+func SignupProcessor(ctx context.Context, req, resp interface{}) error {
 	request, ok := req.(*vo.AuthSignupRequest)
 	if !ok {
 		return cerr.New(
@@ -70,7 +70,11 @@ func (p *signupProcessor) process() error {
 		)
 	}
 
-	userDM := model.NewUserDM(p.ctx)
+	userDM, err := model.NewUserDM(p.ctx)
+	if err != nil {
+		return err
+	}
+
 	h := handler.NewAuthHandler(
 		p.ctx,
 		userDM,

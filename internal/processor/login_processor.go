@@ -70,7 +70,11 @@ func (p *loginProcessor) process() error {
 		)
 	}
 
-	userDM := model.NewUserDM(p.ctx)
+	userDM, err := model.NewUserDM(p.ctx)
+	if err != nil {
+		return err
+	}
+
 	h := handler.NewAuthHandler(
 		p.ctx,
 		userDM,

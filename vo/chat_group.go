@@ -69,7 +69,8 @@ type CreateMessageRequest struct {
 }
 
 type CreateMessageResponse struct {
-	DebugMsg *string `json:"debug_msg"`
+	DebugMsg *string  `json:"debug_msg"`
+	Message  *Message `json:"message"`
 }
 
 type User struct {

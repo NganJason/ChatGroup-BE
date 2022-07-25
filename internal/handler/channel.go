@@ -40,7 +40,7 @@ func (h *ChannelHandler) CreateChannel(
 	*vo.Channel,
 	error,
 ) {
-	existingChannel, err := h.channelDM.GetChannel(nil, channelName)
+	existingChannel, err := h.channelDM.GetChannel(nil, channelName, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -61,12 +61,11 @@ func (h *ChannelHandler) CreateChannel(
 		return nil, err
 	}
 
-	_, err = h.userChannelDM.CreateUserChannel(
+	err = h.userChannelDM.CreateUserChannel(
 		channel.ChannelID,
 		[]*uint64{
 			creatorID,
 		},
-		nil,
 	)
 	if err != nil {
 		return nil, err

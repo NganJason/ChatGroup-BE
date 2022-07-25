@@ -43,7 +43,7 @@ func (h *UserChannelHandler) GetUserChannels(
 	voChannels []vo.Channel,
 	err error,
 ) {
-	userChannels, err := h.userChannelDM.GetUserChannels(userID, nil)
+	userChannels, err := h.userChannelDM.GetUserChannels(userID, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (h *UserChannelHandler) GetChannelUsers(
 	voUsers []vo.User,
 	err error,
 ) {
-	userChannels, err := h.userChannelDM.GetUserChannels(nil, channelID)
+	userChannels, err := h.userChannelDM.GetUserChannels(nil, channelID, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -91,9 +91,8 @@ func (h *UserChannelHandler) GetChannelUsers(
 func (h *UserChannelHandler) AddUsersToChannel(
 	channelID *uint64,
 	userIDs []*uint64,
-	userNames []*string,
 ) error {
-	_, err := h.userChannelDM.CreateUserChannel(channelID, userIDs, userNames)
+	err := h.userChannelDM.CreateUserChannel(channelID, userIDs)
 	if err != nil {
 		return err
 	}

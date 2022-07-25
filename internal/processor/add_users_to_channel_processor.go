@@ -69,10 +69,7 @@ func (p *addUsersToChannelProcessor) process() error {
 	return h.AddUsersToChannel(
 		p.req.ChannelID,
 		p.req.UserIDs,
-		p.req.UserNames,
 	)
-
-	return nil
 }
 
 func (p *addUsersToChannelProcessor) validateReq() error {
@@ -80,7 +77,7 @@ func (p *addUsersToChannelProcessor) validateReq() error {
 		return fmt.Errorf("channelID cannot be empty")
 	}
 
-	if len(p.req.UserIDs) == 0 || len(p.req.UserNames) == 0 {
+	if len(p.req.UserIDs) == 0 {
 		return fmt.Errorf("userIDs and userNames cannot both be empty")
 	}
 

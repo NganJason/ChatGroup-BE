@@ -87,7 +87,6 @@ type CreateMessageResponse struct {
 type AddUsersToChannelRequest struct {
 	ChannelID *uint64   `json:"channel_id"`
 	UserIDs   []*uint64 `json:"user_ids"`
-	UserNames []*string `json:"user_names"`
 }
 
 type AddUsersToChannelResponse struct {

@@ -75,6 +75,7 @@ func (p *createMessageProcessor) process() error {
 	message, err := h.CreateMessage(
 		p.req.ChannelID,
 		p.req.Content,
+		p.req.UserID,
 	)
 	if err != nil {
 		return err

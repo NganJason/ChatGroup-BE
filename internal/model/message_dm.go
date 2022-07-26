@@ -2,12 +2,19 @@ package model
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
 
 	"github.com/NganJason/ChatGroup-BE/internal/model/db"
+	"github.com/NganJason/ChatGroup-BE/internal/model/query"
+	"github.com/NganJason/ChatGroup-BE/internal/utils"
+	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
 )
 
 type MessageDM struct {
 	ctx context.Context
+	db  *sql.DB
 }
 
 func NewMessageDM(ctx context.Context) (Message, error) {
@@ -20,19 +27,129 @@ func (dm *MessageDM) GetMessages(
 	channelID *uint64,
 	fromTime *uint64,
 	toTime *uint64,
+	id *uint64,
 ) (
 	messages []*db.Message,
 	err error,
 ) {
-	return nil, nil
+	if id == nil {
+		if toTime == nil || fromTime == nil {
+			return nil, cerr.New(
+				"toTime or fromTime cannot be empty",
+				http.StatusBadRequest,
+			)
+		}
+	}
+
+	q := query.NewMessageQuery()
+
+	if channelID != nil {
+		q.ChannelID(channelID)
+	}
+
+	if id != nil {
+		q.ID(id)
+	}
+
+	if fromTime != nil {
+		q.FromTime(fromTime)
+	}
+
+	if toTime != nil {
+		q.ToTime(toTime)
+	}
+
+	wheres, args := q.Build()
+
+	baseQuery := fmt.Sprintf(
+		`SELECT * FROM %s WHERE `,
+		dm.getTableName(),
+	)
+
+	rows, err := dm.db.Query(
+		baseQuery+wheres,
+		args...,
+	)
+	if err != nil {
+		return nil, cerr.New(
+			fmt.Sprintf("query messages from db err=%s", err.Error()),
+			http.StatusBadGateway,
+		)
+	}
+
+	for rows.Next() {
+		var message *db.Message
+
+		if err := rows.Scan(
+			&message.ID,
+			&message.MessageID,
+			&message.ChannelID,
+			&message.UserID,
+			&message.Content,
+		); err != nil {
+			if err == sql.ErrNoRows {
+				return messages, nil
+			}
+
+			return nil, cerr.New(
+				fmt.Sprintf("query messages from db err=%s", err.Error()),
+				http.StatusBadGateway,
+			)
+		}
+
+		messages = append(messages, message)
+	}
+
+	return messages, nil
 }
 
 func (dm *MessageDM) CreateMessage(
-	channelID *uint64,
-	content *string,
+	req *CreateMessageReq,
 ) (
 	message *db.Message,
 	err error,
 ) {
-	return nil, nil
+	q := fmt.Sprintf(
+		`
+		INSERT INTO %s
+		(message_id, channel_id, user_id, content)
+		VALUES(?, ?, ?, ?)
+		`, dm.getTableName(),
+	)
+
+	result, err := dm.db.Exec(
+		q,
+		req.MessageID,
+		req.ChannelID,
+		req.UserID,
+		req.Content,
+	)
+	if err != nil {
+		return nil, cerr.New(
+			fmt.Sprintf("insert message into db err=%s", err.Error()),
+			http.StatusBadGateway,
+		)
+	}
+
+	lastInsertID, _ := result.LastInsertId()
+
+	messages, err := dm.GetMessages(
+		nil,
+		nil,
+		nil,
+		utils.Uint64Ptr(uint64(lastInsertID)),
+	)
+
+	if len(messages) == 0 {
+		return nil, cerr.New(
+			"failed to insert message into db",
+			http.StatusBadGateway,
+		)
+	}
+
+	return messages[0], nil
+}
+
+func (dm *MessageDM) getTableName() string {
+	return "message_tab"
 }

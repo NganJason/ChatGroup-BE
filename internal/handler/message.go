@@ -39,6 +39,7 @@ func (h *MessageHandler) GetMessagesByChannelID(
 		channelID,
 		fromTime,
 		toTime,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -60,13 +61,17 @@ func (h *MessageHandler) GetMessagesByChannelID(
 func (h *MessageHandler) CreateMessage(
 	channelID *uint64,
 	content *string,
+	userID *uint64,
 ) (
 	*vo.Message,
 	error,
 ) {
 	message, err := h.messageDM.CreateMessage(
-		channelID,
-		content,
+		&model.CreateMessageReq{
+			ChannelID: channelID,
+			Content:   content,
+			UserID:    userID,
+		},
 	)
 	if err != nil {
 		return nil, err

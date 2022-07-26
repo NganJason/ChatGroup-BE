@@ -41,6 +41,17 @@ type GetUserChannelsResponse struct {
 	Channels []Channel `json:"channels"`
 }
 
+type CreateChannelRequest struct {
+	UserID      *uint64 `json:"user_id"`
+	ChannelName *string `json:"channel_name"`
+	ChannelDesc *string `json:"channel_desc"`
+}
+
+type CreateChannelResponse struct {
+	DebugMsg *string  `json:"debug_msg"`
+	Channel  *Channel `json:"channel"`
+}
+
 type GetChannelMessagesRequest struct {
 	ChannelID    *uint64 `json:"channel_id"`
 	FromUnixTime *uint64 `json:"from_unix_time"`
@@ -71,6 +82,15 @@ type CreateMessageRequest struct {
 type CreateMessageResponse struct {
 	DebugMsg *string  `json:"debug_msg"`
 	Message  *Message `json:"message"`
+}
+
+type AddUsersToChannelRequest struct {
+	ChannelID *uint64   `json:"channel_id"`
+	UserIDs   []*uint64 `json:"user_ids"`
+}
+
+type AddUsersToChannelResponse struct {
+	DebugMsg *string `json:"debug_msg"`
 }
 
 type User struct {

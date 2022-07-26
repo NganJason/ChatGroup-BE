@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+
 	"github.com/NganJason/ChatGroup-BE/internal/model"
 	"github.com/NganJason/ChatGroup-BE/internal/utils"
 	"github.com/NganJason/ChatGroup-BE/vo"
@@ -42,7 +43,7 @@ func (h *UserChannelHandler) GetUserChannels(
 	voChannels []vo.Channel,
 	err error,
 ) {
-	userChannels, err := h.userChannelDM.GetUserChannels(userID, nil)
+	userChannels, err := h.userChannelDM.GetUserChannels(userID, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +58,7 @@ func (h *UserChannelHandler) GetUserChannels(
 		return nil, err
 	}
 
-	return utils.DBChannelToVo(channels), nil
+	return utils.DBChannelsToVo(channels), nil
 }
 
 // Todo: Implement pagination
@@ -69,7 +70,7 @@ func (h *UserChannelHandler) GetChannelUsers(
 	voUsers []vo.User,
 	err error,
 ) {
-	userChannels, err := h.userChannelDM.GetUserChannels(nil, channelID)
+	userChannels, err := h.userChannelDM.GetUserChannels(nil, channelID, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -85,4 +86,16 @@ func (h *UserChannelHandler) GetChannelUsers(
 	}
 
 	return utils.DBUsersToVo(users), nil
+}
+
+func (h *UserChannelHandler) AddUsersToChannel(
+	channelID *uint64,
+	userIDs []*uint64,
+) error {
+	err := h.userChannelDM.CreateUserChannel(channelID, userIDs)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

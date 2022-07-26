@@ -33,6 +33,7 @@ func (h *AuthHandler) Login(
 	user, err := h.userDM.GetUser(
 		nil,
 		userName,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -68,6 +69,7 @@ func (h *AuthHandler) Signup(
 	existingUser, err := h.userDM.GetUser(
 		nil,
 		userName,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -86,6 +88,7 @@ func (h *AuthHandler) Signup(
 	)
 
 	req := &model.CreateUserReq{
+		UserID:         h.generateUserID(),
 		UserName:       *userName,
 		HashedPassword: hashedPassword,
 		Salt:           salt,
@@ -97,4 +100,9 @@ func (h *AuthHandler) Signup(
 	}
 
 	return utils.DBUserToVo(newUser), nil
+}
+
+// Todo
+func (h *AuthHandler) generateUserID() *uint64 {
+	return nil
 }

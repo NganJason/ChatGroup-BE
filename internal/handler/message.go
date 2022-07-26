@@ -93,7 +93,7 @@ func (h *MessageHandler) userIDMapFromMessages(messages []*db.Message) (map[uint
 			continue
 		}
 
-		dbUser, err := h.userDM.GetUser(userID, nil)
+		dbUser, err := h.userDM.GetUser(userID, nil, nil)
 		if err != nil {
 			return nil, err
 		}

@@ -46,6 +46,12 @@ func GetAllProcessors() []ProcessorConfig {
 			Resp:      vo.GetUserChannelsResponse{},
 		},
 		{
+			Path:      "/api/channel/create",
+			Processor: CreateChannelProcessor,
+			Req:       vo.CreateChannelRequest{},
+			Resp:      vo.CreateChannelResponse{},
+		},
+		{
 			Path:      "/api/channel/messages",
 			Processor: GetChannelMessagesProcessor,
 			Req:       vo.GetChannelMessagesRequest{},
@@ -56,6 +62,12 @@ func GetAllProcessors() []ProcessorConfig {
 			Processor: GetChannelMembersProcessor,
 			Req:       vo.GetChannelMembersRequest{},
 			Resp:      vo.GetChannelMembersResponse{},
+		},
+		{
+			Path:      "/api/channel/add_users",
+			Processor: AddUsersToChannelProcessor,
+			Req:       vo.AddUsersToChannelRequest{},
+			Resp:      vo.AddUsersToChannelResponse{},
 		},
 		{
 			Path:      "/api/message/create",

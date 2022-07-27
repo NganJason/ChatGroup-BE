@@ -53,7 +53,7 @@ func (h *ChannelHandler) CreateChannel(
 	}
 
 	channel, err := h.channelDM.CreateChannel(&model.CreateChannelReq{
-		ChannelID:   h.generateChannelID(),
+		ChannelID:   utils.GenerateUUID(),
 		ChannelName: channelName,
 		ChannelDesc: channelDesc,
 	})
@@ -72,8 +72,4 @@ func (h *ChannelHandler) CreateChannel(
 	}
 
 	return utils.DBChannelToVo(channel), nil
-}
-
-func (h *ChannelHandler) generateChannelID() *uint64 {
-	return nil
 }

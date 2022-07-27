@@ -87,8 +87,9 @@ func (h *AuthHandler) Signup(
 		16,
 	)
 
+	userID := utils.GenerateUUID()
 	req := &model.CreateUserReq{
-		UserID:         h.generateUserID(),
+		UserID:         userID,
 		UserName:       *userName,
 		HashedPassword: hashedPassword,
 		Salt:           salt,
@@ -100,9 +101,4 @@ func (h *AuthHandler) Signup(
 	}
 
 	return utils.DBUserToVo(newUser), nil
-}
-
-// Todo
-func (h *AuthHandler) generateUserID() *uint64 {
-	return nil
 }

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/NganJason/ChatGroup-BE/internal/config"
 	"github.com/NganJason/ChatGroup-BE/internal/model/db"
 	"github.com/NganJason/ChatGroup-BE/internal/model/query"
 	"github.com/NganJason/ChatGroup-BE/internal/utils"
@@ -21,6 +22,7 @@ type UserDM struct {
 func NewUserDM(ctx context.Context) (User, error) {
 	return &UserDM{
 		ctx: ctx,
+		db:  config.GetDBs().ChatGroupDB,
 	}, nil
 }
 
@@ -28,7 +30,8 @@ func (dm *UserDM) GetUser(
 	userID *uint64,
 	userName *string,
 	id *uint64,
-) (user *db.User, err error) {
+) (*db.User, error) {
+	var user db.User
 	q := query.NewUserQuery()
 
 	if userID != nil {
@@ -50,7 +53,7 @@ func (dm *UserDM) GetUser(
 
 	wheres, args := q.Build()
 
-	err = dm.db.QueryRow(
+	err := dm.db.QueryRow(
 		baseQuery+wheres,
 		args...,
 	).Scan(
@@ -75,7 +78,7 @@ func (dm *UserDM) GetUser(
 		)
 	}
 
-	return user, nil
+	return &user, nil
 }
 
 func (dm *UserDM) GetUsers(userIDs []*uint64) (users []*db.User, err error) {
@@ -139,7 +142,7 @@ func (dm *UserDM) CreateUser(req *CreateUserReq) (user *db.User, err error) {
 	q := fmt.Sprintf(
 		`
 		INSERT INTO %s 
-		(user_id, user_name, hashed_password, salt, email_address, photo_url) 
+		(user_id, username, hashed_password, salt, email_address, photo_url) 
 		VALUES(?, ?, ?, ?, ?, ?)
 		`, dm.getTableName(),
 	)
@@ -149,6 +152,7 @@ func (dm *UserDM) CreateUser(req *CreateUserReq) (user *db.User, err error) {
 		req.UserID,
 		req.UserName,
 		req.HashedPassword,
+		req.Salt,
 		req.EmailAddress,
 		req.PhotoURL,
 	)
@@ -257,7 +261,7 @@ func (dm *UserDM) UpdateUser(req *UpdateUserReq) (user *db.User, err error) {
 	updateQuery := fmt.Sprintf(
 		`
 		UPDATE %s
-		SET user_name = ?, hashed_password = ?, salt = ?, email_address = ?, photo_url = ?
+		SET username = ?, hashed_password = ?, salt = ?, email_address = ?, photo_url = ?
 		WHERE user_id = ?,
 		`,
 		dm.getTableName(),

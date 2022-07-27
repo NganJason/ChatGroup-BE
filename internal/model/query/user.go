@@ -69,7 +69,7 @@ func (q *UserQuery) Build() (wheres string, args []interface{}) {
 	}
 
 	if len(q.userNames) != 0 {
-		inCondition := "user_name IN (?"
+		inCondition := "username IN (?"
 
 		for i := 1; i < len(q.userNames); i++ {
 			inCondition = inCondition + ",?"

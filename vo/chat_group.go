@@ -8,7 +8,7 @@ type HealthCheckResponse struct {
 }
 
 type AuthLoginRequest struct {
-	UserName *string `json:"user_name"`
+	UserName *string `json:"username"`
 	Password *string `json:"password"`
 }
 
@@ -18,7 +18,7 @@ type AuthLoginResponse struct {
 }
 
 type AuthSignupRequest struct {
-	UserName *string `json:"user_name"`
+	UserName *string `json:"username"`
 	Password *string `json:"password"`
 }
 
@@ -96,7 +96,7 @@ type AddUsersToChannelResponse struct {
 
 type User struct {
 	UserID       *uint64 `json:"user_id"`
-	UserName     *string `json:"user_name"`
+	UserName     *string `json:"username"`
 	EmailAddress *string `json:"email_address"`
 	PhotoURL     *string `json:"photo_url"`
 }

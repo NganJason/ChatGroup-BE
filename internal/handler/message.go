@@ -68,6 +68,7 @@ func (h *MessageHandler) CreateMessage(
 ) {
 	message, err := h.messageDM.CreateMessage(
 		&model.CreateMessageReq{
+			MessageID: utils.GenerateUUID(),
 			ChannelID: channelID,
 			Content:   content,
 			UserID:    userID,

@@ -92,7 +92,10 @@ func (h *UserChannelHandler) AddUsersToChannel(
 	channelID *uint64,
 	userIDs []*uint64,
 ) error {
-	err := h.userChannelDM.CreateUserChannel(channelID, userIDs)
+	err := h.userChannelDM.CreateUserChannel(
+		channelID,
+		userIDs,
+	)
 	if err != nil {
 		return err
 	}

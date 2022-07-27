@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/NganJason/ChatGroup-BE/internal/config"
 	"github.com/NganJason/ChatGroup-BE/internal/model/db"
 	"github.com/NganJason/ChatGroup-BE/internal/model/query"
 	"github.com/NganJason/ChatGroup-BE/internal/utils"
@@ -20,6 +21,7 @@ type ChannelDM struct {
 func NewChannelDM(ctx context.Context) (Channel, error) {
 	return &ChannelDM{
 		ctx: ctx,
+		db:  config.GetDBs().ChatGroupDB,
 	}, nil
 }
 

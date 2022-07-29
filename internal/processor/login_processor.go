@@ -41,17 +41,6 @@ func LoginProcessor(ctx context.Context, req, resp interface{}) error {
 		return err
 	}
 
-	err = utils.GenerateTokenAndAddCookies(
-		p.ctx,
-		strconv.Itoa(int(*p.resp.User.UserID)),
-	)
-	if err != nil {
-		return cerr.New(
-			err.Error(),
-			http.StatusBadGateway,
-		)
-	}
-
 	return nil
 }
 
@@ -86,6 +75,17 @@ func (p *loginProcessor) process() error {
 	)
 	if err != nil {
 		return err
+	}
+
+	err = utils.GenerateTokenAndAddCookies(
+		p.ctx,
+		strconv.Itoa(int(*user.UserID)),
+	)
+	if err != nil {
+		return cerr.New(
+			err.Error(),
+			http.StatusBadGateway,
+		)
 	}
 
 	p.resp.User = user

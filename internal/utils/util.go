@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"strconv"
+	"encoding/binary"
 
-	uuid "github.com/nu7hatch/gouuid"
+	uuid "github.com/google/uuid"
 )
 
 func BoolPtr(b bool) *bool {
@@ -23,9 +23,9 @@ func Uint64Ptr(i uint64) *uint64 {
 }
 
 func GenerateUUID() *uint64 {
-	u, _ := uuid.NewV4()
-
-	id, _ := strconv.ParseUint(u.String(), 10, 64)
-
+	byte, _ := uuid.New().MarshalBinary()
+	
+	id := binary.BigEndian.Uint64(byte)
+	
 	return Uint64Ptr(id)
 }

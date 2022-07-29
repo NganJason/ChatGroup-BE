@@ -102,3 +102,20 @@ func (h *AuthHandler) Signup(
 
 	return utils.DBUserToVo(newUser), nil
 }
+
+func (h *AuthHandler) ValidateUser(userID *uint64) (isAuth bool, err error) {
+	existingUser, err := h.userDM.GetUser(
+		userID,
+		nil,
+		nil,
+	)
+	if err != nil {
+		return false, err
+	}
+
+	if existingUser == nil {
+		return false, nil
+	}
+
+	return true, nil
+}

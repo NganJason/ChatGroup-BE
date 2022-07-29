@@ -60,10 +60,10 @@ func (dm *UserDM) GetUser(
 		&user.ID,
 		&user.UserID,
 		&user.UserName,
-		&user.EmailAddress,
 		&user.HashedPassword,
-		&user.PhotoURL,
 		&user.Salt,
+		&user.EmailAddress,
+		&user.PhotoURL,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)

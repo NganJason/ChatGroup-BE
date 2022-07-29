@@ -11,6 +11,8 @@ require (
 
 require (
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
+	github.com/google/uuid v1.3.0 // indirect
+	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 )

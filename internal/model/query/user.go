@@ -64,7 +64,7 @@ func (q *UserQuery) Build() (wheres string, args []interface{}) {
 		whereCols = append(whereCols, inCondition)
 
 		for _, id := range q.userIDs {
-			args = append(args, id)
+			args = append(args, *id)
 		}
 	}
 
@@ -78,7 +78,7 @@ func (q *UserQuery) Build() (wheres string, args []interface{}) {
 		whereCols = append(whereCols, inCondition)
 
 		for _, userName := range q.userNames {
-			args = append(args, userName)
+			args = append(args, *userName)
 		}
 	}
 

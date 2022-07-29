@@ -2,9 +2,11 @@ package handler
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/NganJason/ChatGroup-BE/internal/model"
 	"github.com/NganJason/ChatGroup-BE/internal/utils"
+	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
 	"github.com/NganJason/ChatGroup-BE/vo"
 )
 
@@ -63,6 +65,7 @@ func (h *UserChannelHandler) GetUserChannels(
 
 // Todo: Implement pagination
 func (h *UserChannelHandler) GetChannelUsers(
+	userID *uint64,
 	channelID *uint64,
 	pageSize *uint32,
 	pageNumber *uint32,
@@ -70,6 +73,18 @@ func (h *UserChannelHandler) GetChannelUsers(
 	voUsers []vo.User,
 	err error,
 ) {
+	userChannel, err := h.userChannelDM.GetUserChannels(userID, channelID, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if userChannel == nil {
+		return nil, cerr.New(
+			"user is not in channel",
+			http.StatusBadRequest,
+		)
+	}
+
 	userChannels, err := h.userChannelDM.GetUserChannels(nil, channelID, nil)
 	if err != nil {
 		return nil, err

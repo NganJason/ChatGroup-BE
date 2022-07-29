@@ -31,6 +31,10 @@ func (dm *ChannelDM) GetChannels(
 	channels []*db.Channel,
 	err error,
 ) {
+	if len(channelIDs) == 0 {
+		return
+	}
+
 	q := query.NewChannelQuery().ChannelIDs(channelIDs)
 	wheres, args := q.Build()
 
@@ -51,7 +55,7 @@ func (dm *ChannelDM) GetChannels(
 	}
 
 	for rows.Next() {
-		var channel *db.Channel
+		var channel db.Channel
 
 		if err := rows.Scan(
 			&channel.ID,
@@ -67,12 +71,12 @@ func (dm *ChannelDM) GetChannels(
 			}
 
 			return nil, cerr.New(
-				fmt.Sprintf("query channels from db err=%s", err.Error()),
+				fmt.Sprintf("scan channels from db err=%s", err.Error()),
 				http.StatusBadGateway,
 			)
 		}
 
-		channels = append(channels, channel)
+		channels = append(channels, &channel)
 	}
 
 	return channels, nil
@@ -83,8 +87,8 @@ func (dm *ChannelDM) GetChannel(
 	channelName *string,
 	id *uint64,
 ) (
-	channel *db.Channel,
-	err error,
+	*db.Channel,
+	error,
 ) {
 	q := query.NewChannelQuery()
 
@@ -107,7 +111,8 @@ func (dm *ChannelDM) GetChannel(
 		dm.getTableName(),
 	)
 
-	err = dm.db.QueryRow(
+	var channel db.Channel
+	err := dm.db.QueryRow(
 		baseQuery+wheres,
 		args...,
 	).Scan(
@@ -130,7 +135,7 @@ func (dm *ChannelDM) GetChannel(
 		)
 	}
 
-	return channel, nil
+	return &channel, nil
 }
 
 func (dm *ChannelDM) CreateChannel(

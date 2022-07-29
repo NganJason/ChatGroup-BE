@@ -24,8 +24,8 @@ func Uint64Ptr(i uint64) *uint64 {
 
 func GenerateUUID() *uint64 {
 	byte, _ := uuid.New().MarshalBinary()
-	
+
 	id := binary.BigEndian.Uint64(byte)
-	
+
 	return Uint64Ptr(id)
 }

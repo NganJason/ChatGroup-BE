@@ -51,7 +51,7 @@ func CheckAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			handleErr(next, w, r, err)
 			return
 		}
-		
+
 		userDM, err := model.NewUserDM(r.Context())
 		if err != nil {
 			handleErr(next, w, r, err)

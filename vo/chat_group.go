@@ -42,7 +42,6 @@ type GetUserChannelsResponse struct {
 }
 
 type CreateChannelRequest struct {
-	UserID      *uint64 `json:"user_id"`
 	ChannelName *string `json:"channel_name"`
 	ChannelDesc *string `json:"channel_desc"`
 }

@@ -65,7 +65,7 @@ func (dm *UserChannelDM) GetUserChannels(
 	}
 
 	for rows.Next() {
-		var userChannel *db.UserChannel
+		var userChannel db.UserChannel
 
 		if err := rows.Scan(
 			&userChannel.ID,
@@ -85,7 +85,7 @@ func (dm *UserChannelDM) GetUserChannels(
 			)
 		}
 
-		userChannels = append(userChannels, userChannel)
+		userChannels = append(userChannels, &userChannel)
 	}
 
 	return userChannels, nil

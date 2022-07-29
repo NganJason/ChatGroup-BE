@@ -70,6 +70,7 @@ func (p *createMessageProcessor) process() error {
 		p.ctx,
 		messageDM,
 		userDM,
+		nil,
 	)
 
 	message, err := h.CreateMessage(

@@ -4,10 +4,13 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/NganJason/ChatGroup-BE/internal/handler"
 	"github.com/NganJason/ChatGroup-BE/internal/model"
+	"github.com/NganJason/ChatGroup-BE/internal/utils"
 	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
+	"github.com/NganJason/ChatGroup-BE/pkg/cookies"
 	"github.com/NganJason/ChatGroup-BE/vo"
 )
 
@@ -16,7 +19,7 @@ func GetChannelMembersProcessor(
 	req,
 	resp interface{},
 ) error {
-	request, ok := resp.(*vo.GetChannelMembersRequest)
+	request, ok := req.(*vo.GetChannelMembersRequest)
 	if !ok {
 		return cerr.New(
 			"convert request body error",
@@ -32,19 +35,37 @@ func GetChannelMembersProcessor(
 		)
 	}
 
+	cookieVal := cookies.GetClientCookieValFromCtx(ctx)
+	if cookieVal == nil {
+		return cerr.New(
+			"cookies not found",
+			http.StatusForbidden,
+		)
+	}
+
+	userID, err := strconv.Atoi(*cookieVal)
+	if err != nil {
+		return cerr.New(
+			fmt.Sprintf("parse cookieVal err=%s", err.Error()),
+			http.StatusForbidden,
+		)
+	}
+
 	p := getUserChannelMembersProcessor{
-		ctx:  ctx,
-		req:  request,
-		resp: response,
+		ctx:    ctx,
+		userID: utils.Uint64Ptr(uint64(userID)),
+		req:    request,
+		resp:   response,
 	}
 
 	return p.process()
 }
 
 type getUserChannelMembersProcessor struct {
-	ctx  context.Context
-	req  *vo.GetChannelMembersRequest
-	resp *vo.GetChannelMembersResponse
+	ctx    context.Context
+	userID *uint64
+	req    *vo.GetChannelMembersRequest
+	resp   *vo.GetChannelMembersResponse
 }
 
 func (p *getUserChannelMembersProcessor) process() error {
@@ -73,6 +94,7 @@ func (p *getUserChannelMembersProcessor) process() error {
 	h.SetUserDM(userDM)
 
 	users, err := h.GetChannelUsers(
+		p.userID,
 		p.req.ChannelID,
 		p.req.PageSize,
 		p.req.PageNumber,
@@ -87,6 +109,10 @@ func (p *getUserChannelMembersProcessor) process() error {
 }
 
 func (p *getUserChannelMembersProcessor) validateReq() error {
+	if p.userID == nil || *p.userID == 0 {
+		return fmt.Errorf("userID cannot be empty")
+	}
+
 	if p.req.ChannelID == nil || *p.req.ChannelID == 0 {
 		return fmt.Errorf("channelID cannot be empty")
 	}

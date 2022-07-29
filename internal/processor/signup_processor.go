@@ -41,17 +41,6 @@ func SignupProcessor(ctx context.Context, req, resp interface{}) error {
 		return err
 	}
 
-	err = utils.GenerateTokenAndAddCookies(
-		p.ctx,
-		strconv.FormatUint(*p.resp.User.UserID, 10),
-	)
-	if err != nil {
-		return cerr.New(
-			err.Error(),
-			http.StatusBadGateway,
-		)
-	}
-
 	return nil
 }
 
@@ -86,6 +75,17 @@ func (p *signupProcessor) process() error {
 	)
 	if err != nil {
 		return err
+	}
+
+	err = utils.GenerateTokenAndAddCookies(
+		p.ctx,
+		strconv.FormatUint(*user.UserID, 10),
+	)
+	if err != nil {
+		return cerr.New(
+			err.Error(),
+			http.StatusBadGateway,
+		)
 	}
 
 	p.resp.User = user

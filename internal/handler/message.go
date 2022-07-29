@@ -2,32 +2,38 @@ package handler
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/NganJason/ChatGroup-BE/internal/model"
 	"github.com/NganJason/ChatGroup-BE/internal/model/db"
 	"github.com/NganJason/ChatGroup-BE/internal/utils"
+	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
 	"github.com/NganJason/ChatGroup-BE/vo"
 )
 
 type MessageHandler struct {
-	ctx       context.Context
-	messageDM model.Message
-	userDM    model.User
+	ctx           context.Context
+	messageDM     model.Message
+	userDM        model.User
+	userChannelDM model.UserChannel
 }
 
 func NewMessageHandler(
 	ctx context.Context,
 	messageDM model.Message,
 	userDM model.User,
+	userChannelDM model.UserChannel,
 ) *MessageHandler {
 	return &MessageHandler{
-		ctx:       ctx,
-		messageDM: messageDM,
-		userDM:    userDM,
+		ctx:           ctx,
+		messageDM:     messageDM,
+		userDM:        userDM,
+		userChannelDM: userChannelDM,
 	}
 }
 
 func (h *MessageHandler) GetMessagesByChannelID(
+	userID,
 	channelID,
 	fromTime,
 	toTime *uint64,
@@ -35,6 +41,18 @@ func (h *MessageHandler) GetMessagesByChannelID(
 	voMessages []vo.Message,
 	err error,
 ) {
+	userChannel, err := h.userChannelDM.GetUserChannels(userID, channelID, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if userChannel == nil {
+		return nil, cerr.New(
+			"user is not in channel",
+			http.StatusBadRequest,
+		)
+	}
+
 	messages, err := h.messageDM.GetMessages(
 		channelID,
 		fromTime,

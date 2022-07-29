@@ -74,7 +74,7 @@ func (q *ChannelQuery) Build() (wheres string, args []interface{}) {
 		whereCols = append(whereCols, inCondition)
 
 		for _, id := range q.channelIDs {
-			args = append(args, id)
+			args = append(args, *id)
 		}
 	}
 
@@ -88,7 +88,7 @@ func (q *ChannelQuery) Build() (wheres string, args []interface{}) {
 		whereCols = append(whereCols, inCondition)
 
 		for _, channelName := range q.channelNames {
-			args = append(args, channelName)
+			args = append(args, *channelName)
 		}
 	}
 

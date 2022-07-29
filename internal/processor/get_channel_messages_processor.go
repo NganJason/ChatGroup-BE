@@ -4,10 +4,13 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/NganJason/ChatGroup-BE/internal/handler"
 	"github.com/NganJason/ChatGroup-BE/internal/model"
+	"github.com/NganJason/ChatGroup-BE/internal/utils"
 	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
+	"github.com/NganJason/ChatGroup-BE/pkg/cookies"
 	"github.com/NganJason/ChatGroup-BE/vo"
 )
 
@@ -32,19 +35,37 @@ func GetChannelMessagesProcessor(
 		)
 	}
 
+	cookieVal := cookies.GetClientCookieValFromCtx(ctx)
+	if cookieVal == nil {
+		return cerr.New(
+			"cookies not found",
+			http.StatusForbidden,
+		)
+	}
+
+	userID, err := strconv.Atoi(*cookieVal)
+	if err != nil {
+		return cerr.New(
+			fmt.Sprintf("parse cookieVal err=%s", err.Error()),
+			http.StatusForbidden,
+		)
+	}
+
 	p := getChannelMessagesProcessor{
-		ctx:  ctx,
-		req:  request,
-		resp: response,
+		ctx:    ctx,
+		userID: utils.Uint64Ptr(uint64(userID)),
+		req:    request,
+		resp:   response,
 	}
 
 	return p.process()
 }
 
 type getChannelMessagesProcessor struct {
-	ctx  context.Context
-	req  *vo.GetChannelMessagesRequest
-	resp *vo.GetChannelMessagesResponse
+	ctx    context.Context
+	userID *uint64
+	req    *vo.GetChannelMessagesRequest
+	resp   *vo.GetChannelMessagesResponse
 }
 
 func (p *getChannelMessagesProcessor) process() error {
@@ -66,13 +87,20 @@ func (p *getChannelMessagesProcessor) process() error {
 		return err
 	}
 
+	userChannelDM, err := model.NewUserChannelDM(p.ctx)
+	if err != nil {
+		return err
+	}
+
 	h := handler.NewMessageHandler(
 		p.ctx,
 		messageDM,
 		userDM,
+		userChannelDM,
 	)
 
 	messages, err := h.GetMessagesByChannelID(
+		p.userID,
 		p.req.ChannelID,
 		p.req.FromUnixTime,
 		p.req.ToUnixTime,
@@ -87,6 +115,10 @@ func (p *getChannelMessagesProcessor) process() error {
 }
 
 func (p *getChannelMessagesProcessor) validateReq() error {
+	if p.userID == nil || *p.userID == 0 {
+		return fmt.Errorf("userID cannot be empty")
+	}
+
 	if p.req.ChannelID == nil || *p.req.ChannelID == 0 {
 		return fmt.Errorf("channelID cannot be empty")
 	}

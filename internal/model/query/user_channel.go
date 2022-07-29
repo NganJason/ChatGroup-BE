@@ -77,12 +77,12 @@ func (q *UserChannelQuery) Build() (
 		whereCols = append(whereCols, inCondition)
 
 		for _, id := range q.channelIDs {
-			args = append(args, id)
+			args = append(args, *id)
 		}
 	}
 
 	if len(q.userIDs) != 0 {
-		inCondition := "channel_name IN (?"
+		inCondition := "user_id IN (?"
 
 		for i := 1; i < len(q.userIDs); i++ {
 			inCondition = inCondition + ",?"
@@ -91,7 +91,7 @@ func (q *UserChannelQuery) Build() (
 		whereCols = append(whereCols, inCondition)
 
 		for _, id := range q.userIDs {
-			args = append(args, id)
+			args = append(args, *id)
 		}
 	}
 

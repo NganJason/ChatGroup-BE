@@ -109,15 +109,15 @@ func (dm *UserDM) GetUsers(userIDs []*uint64) (users []*db.User, err error) {
 	}
 
 	for rows.Next() {
-		var user *db.User
+		var user db.User
 
 		if err := rows.Scan(
 			&user.ID,
 			&user.UserID,
 			&user.UserName,
-			&user.EmailAddress,
 			&user.HashedPassword,
 			&user.Salt,
+			&user.EmailAddress,
 			&user.PhotoURL,
 			&user.CreatedAt,
 			&user.UpdatedAt,
@@ -132,7 +132,7 @@ func (dm *UserDM) GetUsers(userIDs []*uint64) (users []*db.User, err error) {
 			)
 		}
 
-		users = append(users, user)
+		users = append(users, &user)
 	}
 
 	return users, nil

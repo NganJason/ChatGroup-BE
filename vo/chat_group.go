@@ -76,7 +76,6 @@ type GetChannelMembersResponse struct {
 type CreateMessageRequest struct {
 	ChannelID *uint64 `json:"channel_id"`
 	Content   *string `json:"content"`
-	UserID    *uint64 `json:"user_id"`
 }
 
 type CreateMessageResponse struct {

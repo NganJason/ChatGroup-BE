@@ -142,8 +142,8 @@ func (dm *UserDM) CreateUser(req *CreateUserReq) (user *db.User, err error) {
 	q := fmt.Sprintf(
 		`
 		INSERT INTO %s 
-		(user_id, username, hashed_password, salt, email_address, photo_url) 
-		VALUES(?, ?, ?, ?, ?, ?)
+		(user_id, username, hashed_password, salt, email_address, photo_url, created_at, updated_at) 
+		VALUES(?, ?, ?, ?, ?, ?, ?, ?)
 		`, dm.getTableName(),
 	)
 
@@ -155,6 +155,8 @@ func (dm *UserDM) CreateUser(req *CreateUserReq) (user *db.User, err error) {
 		req.Salt,
 		req.EmailAddress,
 		req.PhotoURL,
+		time.Now().UTC().UnixNano(),
+		time.Now().UTC().UnixNano(),
 	)
 	if err != nil {
 		return nil, cerr.New(
@@ -256,7 +258,7 @@ func (dm *UserDM) UpdateUser(req *UpdateUserReq) (user *db.User, err error) {
 		existingUser.PhotoURL = req.PhotoURL
 	}
 
-	existingUser.UpdatedAt = time.Now()
+	existingUser.UpdatedAt = utils.Uint64Ptr(uint64(time.Now().UTC().UnixNano()))
 
 	updateQuery := fmt.Sprintf(
 		`

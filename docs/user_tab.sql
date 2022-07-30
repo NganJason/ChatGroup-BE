@@ -8,8 +8,8 @@ CREATE TABLE `chat_group_db`.`user_tab` (
     `salt` varchar(32) DEFAULT '',
     `email_address` varchar(32) DEFAULT '',
     `photo_url` varchar(32) DEFAULT '',
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `created_at` bigint(20),
+    `updated_at` bigint(20),
     PRIMARY KEY (`id`),
     UNIQUE KEY (`id`,`user_id`)
 );

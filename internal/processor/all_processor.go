@@ -73,12 +73,14 @@ func GetAllProcessors() []ProcessorConfig {
 			Processor: AddUsersToChannelProcessor,
 			Req:       &vo.AddUsersToChannelRequest{},
 			Resp:      &vo.AddUsersToChannelResponse{},
+			NeedAuth:  true,
 		},
 		{
 			Path:      "/api/message/create",
 			Processor: CreateMessageProcessor,
 			Req:       &vo.CreateMessageRequest{},
 			Resp:      &vo.CreateMessageResponse{},
+			NeedAuth:  true,
 		},
 	}
 }

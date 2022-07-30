@@ -4,10 +4,13 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/NganJason/ChatGroup-BE/internal/handler"
 	"github.com/NganJason/ChatGroup-BE/internal/model"
+	"github.com/NganJason/ChatGroup-BE/internal/utils"
 	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
+	"github.com/NganJason/ChatGroup-BE/pkg/cookies"
 	"github.com/NganJason/ChatGroup-BE/vo"
 )
 
@@ -16,7 +19,7 @@ func AddUsersToChannelProcessor(
 	req,
 	resp interface{},
 ) error {
-	request, ok := resp.(*vo.AddUsersToChannelRequest)
+	request, ok := req.(*vo.AddUsersToChannelRequest)
 	if !ok {
 		return cerr.New(
 			"convert request body error",
@@ -32,19 +35,37 @@ func AddUsersToChannelProcessor(
 		)
 	}
 
+	cookieVal := cookies.GetClientCookieValFromCtx(ctx)
+	if cookieVal == nil {
+		return cerr.New(
+			"cookies not found",
+			http.StatusForbidden,
+		)
+	}
+
+	userID, err := strconv.Atoi(*cookieVal)
+	if err != nil {
+		return cerr.New(
+			fmt.Sprintf("parse cookieVal err=%s", err.Error()),
+			http.StatusForbidden,
+		)
+	}
+
 	p := addUsersToChannelProcessor{
-		ctx:  ctx,
-		req:  request,
-		resp: response,
+		ctx:    ctx,
+		userID: utils.Uint64Ptr(uint64(userID)),
+		req:    request,
+		resp:   response,
 	}
 
 	return p.process()
 }
 
 type addUsersToChannelProcessor struct {
-	ctx  context.Context
-	req  *vo.AddUsersToChannelRequest
-	resp *vo.AddUsersToChannelResponse
+	ctx    context.Context
+	userID *uint64
+	req    *vo.AddUsersToChannelRequest
+	resp   *vo.AddUsersToChannelResponse
 }
 
 func (p *addUsersToChannelProcessor) process() error {
@@ -61,18 +82,30 @@ func (p *addUsersToChannelProcessor) process() error {
 		return err
 	}
 
+	userDM, err := model.NewUserDM(p.ctx)
+	if err != nil {
+		return err
+	}
+
 	h := handler.NewUserChannelHandler(
 		p.ctx,
 		userChannelDM,
 	)
 
+	h.SetUserDM(userDM)
+
 	return h.AddUsersToChannel(
+		p.userID,
 		p.req.ChannelID,
 		p.req.UserIDs,
 	)
 }
 
 func (p *addUsersToChannelProcessor) validateReq() error {
+	if p.userID == nil || *p.userID == 0 {
+		return fmt.Errorf("userID cannot be empty")
+	}
+
 	if p.req.ChannelID == nil || *p.req.ChannelID == 0 {
 		return fmt.Errorf("channelID cannot be empty")
 	}

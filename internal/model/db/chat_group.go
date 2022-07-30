@@ -1,7 +1,5 @@
 package db
 
-import "time"
-
 type User struct {
 	ID             *uint64 `json:"id"`
 	UserID         *uint64 `json:"user_id"`
@@ -11,8 +9,8 @@ type User struct {
 	EmailAddress   *string `json:"email_address"`
 	PhotoURL       *string `json:"photo_url"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt *uint64 `json:"created_at"`
+	UpdatedAt *uint64 `json:"updated_at"`
 }
 
 type UserChannel struct {
@@ -21,8 +19,8 @@ type UserChannel struct {
 	ChannelID *uint64 `json:"channel_id"`
 	Unread    *uint32 `json:"unread"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt *uint64 `json:"created_at"`
+	UpdatedAt *uint64 `json:"updated_at"`
 }
 
 type Channel struct {
@@ -32,8 +30,8 @@ type Channel struct {
 	ChannelDesc *string `json:"channel_desc"`
 	Status      *uint32 `json:"status"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt *uint64 `json:"created_at"`
+	UpdatedAt *uint64 `json:"updated_at"`
 }
 
 type Message struct {
@@ -43,6 +41,6 @@ type Message struct {
 	UserID    *uint64 `json:"user_id"`
 	Content   *string `json:"content"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt *uint64 `json:"created_at"`
+	UpdatedAt *uint64 `json:"updated_at"`
 }

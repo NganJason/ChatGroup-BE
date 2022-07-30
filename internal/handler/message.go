@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/NganJason/ChatGroup-BE/internal/model"
@@ -84,6 +85,25 @@ func (h *MessageHandler) CreateMessage(
 	*vo.Message,
 	error,
 ) {
+	userChannel, err := h.userChannelDM.GetUserChannels(
+		userID,
+		channelID,
+		nil,
+	)
+	if err != nil {
+		return nil, cerr.New(
+			fmt.Sprintf("get existing userChannel err=%s", err.Error()),
+			http.StatusBadGateway,
+		)
+	}
+
+	if userChannel == nil {
+		return nil, cerr.New(
+			"creator is not in channel/ channel does not exist",
+			http.StatusBadRequest,
+		)
+	}
+
 	message, err := h.messageDM.CreateMessage(
 		&model.CreateMessageReq{
 			MessageID: utils.GenerateUUID(),

@@ -51,7 +51,7 @@ func DBMessageToVo(dbMessage *db.Message, dbUserIDMap map[uint64]*db.User) *vo.M
 		MessageID: dbMessage.MessageID,
 		ChannelID: dbMessage.ChannelID,
 		Content:   dbMessage.Content,
-		CreatedAt: Uint64Ptr(uint64(dbMessage.CreatedAt.UnixNano())),
+		CreatedAt: dbMessage.CreatedAt,
 	}
 
 	if _, ok := dbUserIDMap[*dbMessage.UserID]; !ok {

@@ -2,9 +2,12 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/NganJason/ChatGroup-BE/internal/model"
+	"github.com/NganJason/ChatGroup-BE/internal/model/db"
 	"github.com/NganJason/ChatGroup-BE/internal/utils"
 	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
 	"github.com/NganJason/ChatGroup-BE/vo"
@@ -104,10 +107,52 @@ func (h *UserChannelHandler) GetChannelUsers(
 }
 
 func (h *UserChannelHandler) AddUsersToChannel(
+	creatorID *uint64,
 	channelID *uint64,
 	userIDs []*uint64,
 ) error {
-	err := h.userChannelDM.CreateUserChannel(
+	userChannel, err := h.userChannelDM.GetUserChannels(
+		creatorID,
+		channelID,
+		nil,
+	)
+	if err != nil {
+		return cerr.New(
+			fmt.Sprintf("get existing userChannel err=%s", err.Error()),
+			http.StatusBadGateway,
+		)
+	}
+
+	if userChannel == nil {
+		return cerr.New(
+			"creator is not in channel/ channel does not exist",
+			http.StatusBadRequest,
+		)
+	}
+
+	existingUsers, err := h.userDM.GetUsers(userIDs)
+	if err != nil {
+		return cerr.New(
+			fmt.Sprintf("get existing users err=%s", err.Error()),
+			http.StatusBadGateway,
+		)
+	}
+
+	if len(existingUsers) != len(userIDs) {
+		invalidUserIDs := h.getInvalidUserIDs(existingUsers, userIDs)
+
+		msg := "invalid users="
+		for _, id := range invalidUserIDs {
+			msg = msg + strconv.Itoa(int(id)) + ","
+		}
+
+		return cerr.New(
+			msg,
+			http.StatusBadRequest,
+		)
+	}
+
+	err = h.userChannelDM.CreateUserChannel(
 		channelID,
 		userIDs,
 	)
@@ -116,4 +161,24 @@ func (h *UserChannelHandler) AddUsersToChannel(
 	}
 
 	return nil
+}
+
+func (h *UserChannelHandler) getInvalidUserIDs(
+	existingUsers []*db.User,
+	userIDs []*uint64,
+) []uint64 {
+	userIDMap := make(map[uint64]bool)
+	invalidUserIDs := make([]uint64, 0)
+
+	for _, user := range existingUsers {
+		userIDMap[*user.UserID] = true
+	}
+
+	for _, id := range userIDs {
+		if _, ok := userIDMap[*id]; !ok {
+			invalidUserIDs = append(invalidUserIDs, *id)
+		}
+	}
+
+	return invalidUserIDs
 }

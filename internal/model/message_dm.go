@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/NganJason/ChatGroup-BE/internal/config"
 	"github.com/NganJason/ChatGroup-BE/internal/model/db"
@@ -80,7 +81,7 @@ func (dm *MessageDM) GetMessages(
 	}
 
 	for rows.Next() {
-		var message *db.Message
+		var message db.Message
 
 		if err := rows.Scan(
 			&message.ID,
@@ -88,6 +89,8 @@ func (dm *MessageDM) GetMessages(
 			&message.ChannelID,
 			&message.UserID,
 			&message.Content,
+			&message.CreatedAt,
+			&message.UpdatedAt,
 		); err != nil {
 			if err == sql.ErrNoRows {
 				return messages, nil
@@ -99,7 +102,7 @@ func (dm *MessageDM) GetMessages(
 			)
 		}
 
-		messages = append(messages, message)
+		messages = append(messages, &message)
 	}
 
 	return messages, nil
@@ -114,8 +117,8 @@ func (dm *MessageDM) CreateMessage(
 	q := fmt.Sprintf(
 		`
 		INSERT INTO %s
-		(message_id, channel_id, user_id, content)
-		VALUES(?, ?, ?, ?)
+		(message_id, channel_id, user_id, content, created_at, updated_at)
+		VALUES(?, ?, ?, ?, ?, ?)
 		`, dm.getTableName(),
 	)
 
@@ -125,6 +128,8 @@ func (dm *MessageDM) CreateMessage(
 		req.ChannelID,
 		req.UserID,
 		req.Content,
+		time.Now().UTC().UnixNano(),
+		time.Now().UTC().UnixNano(),
 	)
 	if err != nil {
 		return nil, cerr.New(
@@ -141,6 +146,12 @@ func (dm *MessageDM) CreateMessage(
 		nil,
 		utils.Uint64Ptr(uint64(lastInsertID)),
 	)
+	if err != nil {
+		return nil, cerr.New(
+			fmt.Sprintf("refetch message from db err=%s", err.Error()),
+			http.StatusBadGateway,
+		)
+	}
 
 	if len(messages) == 0 {
 		return nil, cerr.New(

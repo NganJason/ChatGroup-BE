@@ -6,8 +6,8 @@ CREATE TABLE `chat_group_db`.`message_tab` (
     `channel_id` bigint(20) unsigned NOT NULL,
     `user_id` bigint(20) unsigned NOT NULL,
     `content` TEXT,
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `created_at` bigint(20),
+    `updated_at` bigint(20),
     PRIMARY KEY (`id`),
     UNIQUE KEY (`id`, `channel_id`)
 );

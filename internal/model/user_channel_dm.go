@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/NganJason/ChatGroup-BE/internal/config"
 	"github.com/NganJason/ChatGroup-BE/internal/model/db"
@@ -100,8 +101,8 @@ func (dm *UserChannelDM) CreateUserChannel(
 	q := fmt.Sprintf(
 		`
 		INSERT INTO %s 
-		(user_id, channel_id, unread) 
-		VALUES(?, ?, ?)
+		(user_id, channel_id, unread, created_at, updated_at) 
+		VALUES(?, ?, ?, ?, ?)
 		`, dm.getTableName(),
 	)
 
@@ -111,6 +112,8 @@ func (dm *UserChannelDM) CreateUserChannel(
 			userID,
 			channelID,
 			0,
+			time.Now().UTC().UnixNano(),
+			time.Now().UTC().UnixNano(),
 		)
 		if err != nil {
 			return cerr.New(

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/NganJason/ChatGroup-BE/internal/config"
 	"github.com/NganJason/ChatGroup-BE/internal/model/db"
@@ -147,8 +148,8 @@ func (dm *ChannelDM) CreateChannel(
 	q := fmt.Sprintf(
 		`
 		INSERT INTO %s
-		(channel_id, channel_name, channel_desc)
-		VALUES(?, ?, ?)
+		(channel_id, channel_name, channel_desc, created_at, updated_at)
+		VALUES(?, ?, ?, ?, ?)
 		`, dm.getTableName(),
 	)
 
@@ -157,6 +158,8 @@ func (dm *ChannelDM) CreateChannel(
 		req.ChannelID,
 		req.ChannelName,
 		req.ChannelDesc,
+		time.Now().UTC().UnixNano(),
+		time.Now().UTC().UnixNano(),
 	)
 	if err != nil {
 		return nil, cerr.New(

@@ -4,10 +4,13 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/NganJason/ChatGroup-BE/internal/handler"
 	"github.com/NganJason/ChatGroup-BE/internal/model"
+	"github.com/NganJason/ChatGroup-BE/internal/utils"
 	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
+	"github.com/NganJason/ChatGroup-BE/pkg/cookies"
 	"github.com/NganJason/ChatGroup-BE/vo"
 )
 
@@ -16,7 +19,7 @@ func CreateMessageProcessor(
 	req,
 	resp interface{},
 ) error {
-	request, ok := resp.(*vo.CreateMessageRequest)
+	request, ok := req.(*vo.CreateMessageRequest)
 	if !ok {
 		return cerr.New(
 			"convert request body error",
@@ -32,19 +35,37 @@ func CreateMessageProcessor(
 		)
 	}
 
+	cookieVal := cookies.GetClientCookieValFromCtx(ctx)
+	if cookieVal == nil {
+		return cerr.New(
+			"cookies not found",
+			http.StatusForbidden,
+		)
+	}
+
+	userID, err := strconv.Atoi(*cookieVal)
+	if err != nil {
+		return cerr.New(
+			fmt.Sprintf("parse cookieVal err=%s", err.Error()),
+			http.StatusForbidden,
+		)
+	}
+
 	p := createMessageProcessor{
-		ctx:  ctx,
-		req:  request,
-		resp: response,
+		ctx:    ctx,
+		userID: utils.Uint64Ptr(uint64(userID)),
+		req:    request,
+		resp:   response,
 	}
 
 	return p.process()
 }
 
 type createMessageProcessor struct {
-	ctx  context.Context
-	req  *vo.CreateMessageRequest
-	resp *vo.CreateMessageResponse
+	ctx    context.Context
+	userID *uint64
+	req    *vo.CreateMessageRequest
+	resp   *vo.CreateMessageResponse
 }
 
 func (p *createMessageProcessor) process() error {
@@ -66,17 +87,22 @@ func (p *createMessageProcessor) process() error {
 		return err
 	}
 
+	userChannelDM, err := model.NewUserChannelDM(p.ctx)
+	if err != nil {
+		return err
+	}
+
 	h := handler.NewMessageHandler(
 		p.ctx,
 		messageDM,
 		userDM,
-		nil,
+		userChannelDM,
 	)
 
 	message, err := h.CreateMessage(
 		p.req.ChannelID,
 		p.req.Content,
-		p.req.UserID,
+		p.userID,
 	)
 	if err != nil {
 		return err
@@ -88,6 +114,10 @@ func (p *createMessageProcessor) process() error {
 }
 
 func (p *createMessageProcessor) validateReq() error {
+	if p.userID == nil || *p.userID == 0 {
+		return fmt.Errorf("userID cannot be empty")
+	}
+
 	if p.req.ChannelID == nil || *p.req.ChannelID == 0 {
 		return fmt.Errorf("channelID cannot be empty")
 	}

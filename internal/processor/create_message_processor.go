@@ -43,7 +43,7 @@ func CreateMessageProcessor(
 		)
 	}
 
-	userID, err := strconv.Atoi(*cookieVal)
+	userID, err := strconv.ParseUint(*cookieVal, 10, 64)
 	if err != nil {
 		return cerr.New(
 			fmt.Sprintf("parse cookieVal err=%s", err.Error()),

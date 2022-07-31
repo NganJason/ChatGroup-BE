@@ -39,7 +39,7 @@ func Wrapper(
 
 		ctx := clog.ContextWithTraceID(
 			r.Context(),
-			strconv.Itoa(int(time.Now().Unix())),
+			strconv.FormatUint(uint64(time.Now().Unix()), 10),
 		)
 
 		err := cerr.GetErrFromCtx(ctx)

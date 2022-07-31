@@ -2,6 +2,7 @@ package processor
 
 import (
 	"context"
+
 	"github.com/NganJason/ChatGroup-BE/vo"
 )
 
@@ -22,6 +23,13 @@ func GetAllProcessors() []ProcessorConfig {
 			Resp:      &vo.HealthCheckResponse{},
 		},
 		{
+			Path:      "/api/auth/validate",
+			Processor: ValidateAuthProcessor,
+			Req:       &vo.ValidateAuthRequest{},
+			Resp:      &vo.ValidateAuthResponse{},
+			NeedAuth:  true,
+		},
+		{
 			Path:      "/api/auth/login",
 			Processor: LoginProcessor,
 			Req:       &vo.AuthLoginRequest{},
@@ -32,6 +40,12 @@ func GetAllProcessors() []ProcessorConfig {
 			Processor: SignupProcessor,
 			Req:       &vo.AuthSignupRequest{},
 			Resp:      &vo.AuthSignupResponse{},
+		},
+		{
+			Path:      "/api/auth/logout",
+			Processor: LogoutProcessor,
+			Req:       &vo.AuthLogoutRequest{},
+			Resp:      &vo.AuthLogoutResponse{},
 		},
 		{
 			Path:      "/api/user/info",

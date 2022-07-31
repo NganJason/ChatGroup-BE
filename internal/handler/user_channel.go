@@ -143,7 +143,7 @@ func (h *UserChannelHandler) AddUsersToChannel(
 
 		msg := "invalid users="
 		for _, id := range invalidUserIDs {
-			msg = msg + strconv.Itoa(int(id)) + ","
+			msg = msg + strconv.FormatUint(id, 10) + ","
 		}
 
 		return cerr.New(

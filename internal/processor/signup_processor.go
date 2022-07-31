@@ -79,7 +79,7 @@ func (p *signupProcessor) process() error {
 
 	err = utils.GenerateTokenAndAddCookies(
 		p.ctx,
-		strconv.Itoa(int(*user.UserID)),
+		strconv.FormatUint(*user.UserID, 10),
 	)
 	if err != nil {
 		return cerr.New(

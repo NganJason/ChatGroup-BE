@@ -3,14 +3,15 @@ package processor
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/NganJason/ChatGroup-BE/internal/handler"
 	"github.com/NganJason/ChatGroup-BE/internal/model"
 	"github.com/NganJason/ChatGroup-BE/internal/utils"
 	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
 	"github.com/NganJason/ChatGroup-BE/pkg/cookies"
 	"github.com/NganJason/ChatGroup-BE/vo"
-	"net/http"
-	"strconv"
 )
 
 func GetUserChannelsProcessor(ctx context.Context, req, resp interface{}) error {
@@ -30,7 +31,7 @@ func GetUserChannelsProcessor(ctx context.Context, req, resp interface{}) error 
 		)
 	}
 
-	userID, err := strconv.Atoi(*cookieVal)
+	userID, err := strconv.ParseUint(*cookieVal, 10, 64)
 	if err != nil {
 		return cerr.New(
 			fmt.Sprintf("parse cookieVal err=%s", err.Error()),

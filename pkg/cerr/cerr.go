@@ -46,5 +46,13 @@ func GetErrFromCtx(ctx context.Context) error {
 		return nil
 	}
 
-	return val.(*cerr)
+	if cerr, ok := val.(*cerr); ok {
+		return cerr
+	}
+
+	if e, ok := val.(error); ok {
+		return New(e.Error(), http.StatusBadGateway)
+	}
+
+	return New("unknown error", http.StatusBadGateway)
 }

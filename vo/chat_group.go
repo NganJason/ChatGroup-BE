@@ -7,6 +7,12 @@ type HealthCheckResponse struct {
 	Message  *string `json:"message"`
 }
 
+type ValidateAuthRequest struct{}
+
+type ValidateAuthResponse struct {
+	DebugMsg *string `json:"debug_msg"`
+	IsAuth   *bool   `json:"is_auth"`
+}
 type AuthLoginRequest struct {
 	UserName *string `json:"username"`
 	Password *string `json:"password"`
@@ -25,6 +31,12 @@ type AuthSignupRequest struct {
 type AuthSignupResponse struct {
 	DebugMsg *string `json:"debug_msg"`
 	User     *User   `json:"user_info"`
+}
+
+type AuthLogoutRequest struct{}
+
+type AuthLogoutResponse struct {
+	DebugMsg *string `json:"debug_msg"`
 }
 
 type GetUserInfoRequest struct{}

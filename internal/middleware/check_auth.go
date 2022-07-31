@@ -48,7 +48,15 @@ func CheckAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		userIDStr := auth.Value
 		userID, err := strconv.ParseUint(userIDStr, 0, 64)
 		if err != nil {
-			handleErr(next, w, r, err)
+			handleErr(
+				next,
+				w,
+				r,
+				cerr.New(
+					fmt.Sprintf("parse userIDStr err=%s", err.Error()),
+					http.StatusBadGateway,
+				),
+			)
 			return
 		}
 

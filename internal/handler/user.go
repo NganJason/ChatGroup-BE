@@ -31,3 +31,12 @@ func (h *UserHandler) GetUser(userID *uint64) (userVo *vo.User, err error) {
 
 	return utils.DBUserToVo(user), nil
 }
+
+func (h *UserHandler) SearchUsers(keyword *string) (usersVo []vo.User, err error) {
+	users, err := h.userDM.SearchUsers(keyword)
+	if err != nil {
+		return nil, err
+	}
+
+	return utils.DBUsersToVo(users), nil
+}

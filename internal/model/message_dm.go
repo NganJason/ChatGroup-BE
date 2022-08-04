@@ -128,8 +128,8 @@ func (dm *MessageDM) CreateMessage(
 		req.ChannelID,
 		req.UserID,
 		req.Content,
-		time.Now().UTC().UnixNano(),
-		time.Now().UTC().UnixNano(),
+		time.Now().UnixNano()/int64(time.Millisecond),
+		time.Now().UnixNano()/int64(time.Millisecond),
 	)
 	if err != nil {
 		return nil, cerr.New(

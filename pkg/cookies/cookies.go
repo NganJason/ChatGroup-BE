@@ -78,7 +78,7 @@ func CreateCookie(value string, options ...cookieOption) *http.Cookie {
 		Path:     "/",
 		MaxAge:   10 * 60,
 		HttpOnly: true,
-		Secure:   true,
+		// Secure:   true,
 	}
 
 	for _, opt := range options {

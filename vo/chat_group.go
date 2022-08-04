@@ -1,5 +1,10 @@
 package vo
 
+import (
+	"encoding/json"
+	"strconv"
+)
+
 type HealthCheckRequest struct{}
 
 type HealthCheckResponse struct {
@@ -11,7 +16,7 @@ type ValidateAuthRequest struct{}
 
 type ValidateAuthResponse struct {
 	DebugMsg *string `json:"debug_msg"`
-	IsAuth   *bool   `json:"is_auth"`
+	User     *User   `json:"user_info"`
 }
 type AuthLoginRequest struct {
 	UserName *string `json:"username"`
@@ -53,6 +58,15 @@ type GetUserChannelsResponse struct {
 	Channels []Channel `json:"channels"`
 }
 
+type SearchUsersRequest struct {
+	Keyword *string `json:"keyword"`
+}
+
+type SearchUsersResponse struct {
+	DebugMsg *string `json:"debug_msg"`
+	Users    []User  `json:"users"`
+}
+
 type CreateChannelRequest struct {
 	ChannelName *string `json:"channel_name"`
 	ChannelDesc *string `json:"channel_desc"`
@@ -64,7 +78,7 @@ type CreateChannelResponse struct {
 }
 
 type GetChannelMessagesRequest struct {
-	ChannelID    *uint64 `json:"channel_id"`
+	ChannelID    *uint64 `json:"channel_id,string"`
 	FromUnixTime *uint64 `json:"from_unix_time"`
 	ToUnixTime   *uint64 `json:"to_unix_time"`
 }
@@ -75,7 +89,7 @@ type GetChannelMessagesResponse struct {
 }
 
 type GetChannelMembersRequest struct {
-	ChannelID  *uint64 `json:"channel_id"`
+	ChannelID  *uint64 `json:"channel_id,string"`
 	PageSize   *uint32 `json:"page_size"`
 	PageNumber *uint32 `json:"page_number"`
 }
@@ -86,7 +100,7 @@ type GetChannelMembersResponse struct {
 }
 
 type CreateMessageRequest struct {
-	ChannelID *uint64 `json:"channel_id"`
+	ChannelID *uint64 `json:"channel_id,string"`
 	Content   *string `json:"content"`
 }
 
@@ -96,8 +110,8 @@ type CreateMessageResponse struct {
 }
 
 type AddUsersToChannelRequest struct {
-	ChannelID *uint64   `json:"channel_id"`
-	UserIDs   []*uint64 `json:"user_ids"`
+	ChannelID *uint64      `json:"channel_id,string"`
+	UserIDs   []*Uint64Str `json:"user_ids,string"`
 }
 
 type AddUsersToChannelResponse struct {
@@ -105,14 +119,14 @@ type AddUsersToChannelResponse struct {
 }
 
 type User struct {
-	UserID       *uint64 `json:"user_id"`
+	UserID       *uint64 `json:"user_id,string"`
 	UserName     *string `json:"username"`
 	EmailAddress *string `json:"email_address"`
 	PhotoURL     *string `json:"photo_url"`
 }
 
 type Channel struct {
-	ChannelID   *uint64 `json:"channel_id"`
+	ChannelID   *uint64 `json:"channel_id,string"`
 	ChannelName *string `json:"channel_name"`
 	ChannelDesc *string `json:"channel_desc"`
 	Unread      *uint32 `json:"unread"`
@@ -120,8 +134,30 @@ type Channel struct {
 
 type Message struct {
 	MessageID *uint64 `json:"message_id"`
-	ChannelID *uint64 `json:"channel_id"`
+	ChannelID *uint64 `json:"channel_id,string"`
 	Content   *string `json:"content"`
 	CreatedAt *uint64 `json:"created_at"`
 	Sender    *User   `json:"sender"`
+}
+
+type Uint64Str uint64
+
+func (i Uint64Str) MarshalJSON() ([]byte, error) {
+	return json.Marshal(strconv.FormatInt(int64(i), 10))
+}
+
+func (i *Uint64Str) UnmarshalJSON(b []byte) error {
+	// Try string first
+	var s string
+	if err := json.Unmarshal(b, &s); err == nil {
+		value, err := strconv.ParseUint(s, 10, 64)
+		if err != nil {
+			return err
+		}
+		*i = Uint64Str(value)
+		return nil
+	}
+
+	// Fallback to number
+	return json.Unmarshal(b, (*uint64)(i))
 }

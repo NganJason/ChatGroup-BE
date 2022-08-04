@@ -36,8 +36,8 @@ func NewMessageHandler(
 func (h *MessageHandler) GetMessagesByChannelID(
 	userID,
 	channelID,
-	fromTime,
-	toTime *uint64,
+	fromTime *uint64,
+	pageSize *uint32,
 ) (
 	voMessages []vo.Message,
 	err error,
@@ -57,7 +57,7 @@ func (h *MessageHandler) GetMessagesByChannelID(
 	messages, err := h.messageDM.GetMessages(
 		channelID,
 		fromTime,
-		toTime,
+		pageSize,
 		nil,
 	)
 	if err != nil {

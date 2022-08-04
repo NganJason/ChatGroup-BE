@@ -5,7 +5,7 @@ import "strings"
 type MessageQuery struct {
 	channelIDs []*uint64
 	fromTime   *uint64
-	toTime     *uint64
+	pageSize *uint32
 	id         *uint64
 }
 
@@ -47,10 +47,10 @@ func (q *MessageQuery) FromTime(
 	return q
 }
 
-func (q *MessageQuery) ToTime(
-	toTime *uint64,
+func (q *MessageQuery) PageSize(
+	pageSize *uint32,
 ) *MessageQuery {
-	q.toTime = toTime
+	q.pageSize = pageSize
 
 	return q
 }
@@ -77,14 +77,19 @@ func (q *MessageQuery) Build() (wheres string, args []interface{}) {
 		}
 	}
 
-	if q.fromTime != nil && q.toTime != nil {
-		betweenCondition := "created_at BETWEEN ? AND ? "
-		whereCols = append(whereCols, betweenCondition)
+	if q.fromTime != nil {
+		whereCols = append(whereCols, "created_at < ? ")
 		args = append(args, q.fromTime)
-		args = append(args, q.toTime)
 	}
 
 	wheres = strings.Join(whereCols, " AND ")
+
+	wheres += " ORDER BY created_at DESC"
+
+	if q.pageSize != nil {
+		wheres += " LIMIT ?"
+		args = append(args, *q.pageSize)
+	}
 
 	return wheres, args
 }

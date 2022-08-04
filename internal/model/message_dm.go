@@ -29,21 +29,12 @@ func NewMessageDM(ctx context.Context) (Message, error) {
 func (dm *MessageDM) GetMessages(
 	channelID *uint64,
 	fromTime *uint64,
-	toTime *uint64,
+	pageSize *uint32,
 	id *uint64,
 ) (
 	messages []*db.Message,
 	err error,
 ) {
-	if id == nil {
-		if toTime == nil || fromTime == nil {
-			return nil, cerr.New(
-				"toTime or fromTime cannot be empty",
-				http.StatusBadRequest,
-			)
-		}
-	}
-
 	q := query.NewMessageQuery()
 
 	if channelID != nil {
@@ -58,8 +49,8 @@ func (dm *MessageDM) GetMessages(
 		q.FromTime(fromTime)
 	}
 
-	if toTime != nil {
-		q.ToTime(toTime)
+	if pageSize != nil {
+		q.PageSize(pageSize)
 	}
 
 	wheres, args := q.Build()

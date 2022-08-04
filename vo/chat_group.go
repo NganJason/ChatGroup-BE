@@ -80,7 +80,7 @@ type CreateChannelResponse struct {
 type GetChannelMessagesRequest struct {
 	ChannelID    *uint64 `json:"channel_id,string"`
 	FromUnixTime *uint64 `json:"from_unix_time"`
-	ToUnixTime   *uint64 `json:"to_unix_time"`
+	PageSize   *uint32 `json:"page_size"`
 }
 
 type GetChannelMessagesResponse struct {

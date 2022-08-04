@@ -10,6 +10,7 @@ import (
 	"github.com/NganJason/ChatGroup-BE/internal/model"
 	"github.com/NganJason/ChatGroup-BE/internal/utils"
 	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
+	"github.com/NganJason/ChatGroup-BE/pkg/clog"
 	"github.com/NganJason/ChatGroup-BE/pkg/cookies"
 	"github.com/NganJason/ChatGroup-BE/vo"
 )
@@ -45,6 +46,7 @@ func AddUsersToChannelProcessor(
 
 	userID, err := strconv.ParseUint(*cookieVal, 10, 64)
 	if err != nil {
+		clog.Error(ctx, err.Error())
 		return cerr.New(
 			fmt.Sprintf("parse cookieVal err=%s", err.Error()),
 			http.StatusForbidden,
@@ -94,10 +96,17 @@ func (p *addUsersToChannelProcessor) process() error {
 
 	h.SetUserDM(userDM)
 
+	userIDs := make([]*uint64, 0)
+
+	for _, id := range p.req.UserIDs {
+		uint64ID := uint64(*id)
+		userIDs = append(userIDs, &uint64ID)
+	}
+
 	return h.AddUsersToChannel(
 		p.userID,
 		p.req.ChannelID,
-		p.req.UserIDs,
+		userIDs,
 	)
 }
 

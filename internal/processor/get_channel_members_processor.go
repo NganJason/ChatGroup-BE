@@ -117,13 +117,5 @@ func (p *getUserChannelMembersProcessor) validateReq() error {
 		return fmt.Errorf("channelID cannot be empty")
 	}
 
-	if p.req.PageSize == nil || *p.req.PageSize == 0 {
-		return fmt.Errorf("pageSize cannot be empty")
-	}
-
-	if p.req.PageNumber == nil || *p.req.PageNumber == 0 {
-		return fmt.Errorf("pageNumber cannot be empty")
-	}
-
 	return nil
 }

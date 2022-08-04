@@ -30,16 +30,12 @@ func ValidateAuthProcessor(
 	cookieVal := cookies.GetClientCookieValFromCtx(ctx)
 	if cookieVal == nil {
 		clog.Info(ctx, "cookie is nil")
-
-		response.IsAuth = utils.BoolPtr(false)
 		return nil
 	}
 
 	userID, err := strconv.ParseUint(*cookieVal, 10, 64)
 	if err != nil {
 		clog.Error(ctx, err.Error())
-
-		response.IsAuth = utils.BoolPtr(false)
 		return nil
 	}
 
@@ -62,8 +58,6 @@ type validateAuthProcessor struct {
 func (p *validateAuthProcessor) process() error {
 	if p.userID == nil || *p.userID == 0 {
 		clog.Info(p.ctx, "userID is empty")
-
-		p.resp.IsAuth = utils.BoolPtr(false)
 		return nil
 	}
 
@@ -72,13 +66,13 @@ func (p *validateAuthProcessor) process() error {
 		return err
 	}
 
-	h := handler.NewAuthHandler(p.ctx, userDM)
-	isAuth, err := h.ValidateUser(p.userID)
+	h := handler.NewUserHandler(p.ctx, userDM)
+	user, err := h.GetUser(p.userID)
 	if err != nil {
 		return err
 	}
 
-	p.resp.IsAuth = utils.BoolPtr(isAuth)
+	p.resp.User = user
 
 	return nil
 }

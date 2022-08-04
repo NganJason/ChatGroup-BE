@@ -62,6 +62,12 @@ func GetAllProcessors() []ProcessorConfig {
 			NeedAuth:  true,
 		},
 		{
+			Path:      "/api/user/search",
+			Processor: SearchUsersProcessor,
+			Req:       &vo.SearchUsersRequest{},
+			Resp:      &vo.SearchUsersResponse{},
+		},
+		{
 			Path:      "/api/channel/create",
 			Processor: CreateChannelProcessor,
 			Req:       &vo.CreateChannelRequest{},

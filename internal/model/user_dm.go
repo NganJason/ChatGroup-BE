@@ -297,6 +297,60 @@ func (dm *UserDM) UpdateUser(req *UpdateUserReq) (user *db.User, err error) {
 	return existingUser, nil
 }
 
+func (dm *UserDM) SearchUsers(
+	keyword *string,
+) (
+	users []*db.User,
+	err error,
+) {
+	baseQuery := fmt.Sprintf(
+		`SELECT * from %s WHERE `,
+		dm.getTableName(),
+	)
+
+	q := query.NewUserQuery().Keyword(keyword)
+	wheres, args := q.Build()
+
+	rows, err := dm.db.Query(
+		baseQuery+wheres,
+		args...,
+	)
+	if err != nil {
+		return nil, cerr.New(
+			fmt.Sprintf("query users from db err=%s", err.Error()),
+			http.StatusBadGateway,
+		)
+	}
+
+	for rows.Next() {
+		var user db.User
+
+		if err := rows.Scan(
+			&user.ID,
+			&user.UserID,
+			&user.UserName,
+			&user.HashedPassword,
+			&user.Salt,
+			&user.EmailAddress,
+			&user.PhotoURL,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+		); err != nil {
+			if err == sql.ErrNoRows {
+				return users, nil
+			}
+
+			return nil, cerr.New(
+				fmt.Sprintf("query users from db err=%s", err.Error()),
+				http.StatusBadGateway,
+			)
+		}
+
+		users = append(users, &user)
+	}
+
+	return users, nil
+}
 func (dm *UserDM) getTableName() string {
 	return "user_tab"
 }

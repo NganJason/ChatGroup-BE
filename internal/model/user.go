@@ -7,6 +7,7 @@ type User interface {
 	GetUsers(userID []*uint64) (users []*db.User, err error)
 	CreateUser(req *CreateUserReq) (user *db.User, err error)
 	UpdateUser(req *UpdateUserReq) (user *db.User, err error)
+	SearchUsers(keyword *string) (users []*db.User, err error)
 }
 
 type CreateUserReq struct {

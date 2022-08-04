@@ -22,6 +22,10 @@ func Uint64Ptr(i uint64) *uint64 {
 	return &i
 }
 
+func Uint32Ptr(i uint32) *uint32 {
+	return &i
+}
+
 func GenerateUUID() *uint64 {
 	byte, _ := uuid.New().MarshalBinary()
 

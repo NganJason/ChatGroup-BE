@@ -99,11 +99,15 @@ func (p *getChannelMessagesProcessor) process() error {
 		userChannelDM,
 	)
 
+	if p.req.PageSize == nil {
+		p.req.PageSize = utils.Uint32Ptr(uint32(100))
+	}
+
 	messages, err := h.GetMessagesByChannelID(
 		p.userID,
 		p.req.ChannelID,
 		p.req.FromUnixTime,
-		p.req.ToUnixTime,
+		p.req.PageSize,
 	)
 	if err != nil {
 		return err
@@ -121,14 +125,6 @@ func (p *getChannelMessagesProcessor) validateReq() error {
 
 	if p.req.ChannelID == nil || *p.req.ChannelID == 0 {
 		return fmt.Errorf("channelID cannot be empty")
-	}
-
-	if p.req.FromUnixTime == nil || *p.req.FromUnixTime == 0 {
-		return fmt.Errorf("fromUnixTime cannot be empty")
-	}
-
-	if p.req.ToUnixTime == nil || *p.req.ToUnixTime == 0 {
-		return fmt.Errorf("toUnixTime cannot be empty")
 	}
 
 	return nil

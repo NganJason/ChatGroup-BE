@@ -80,7 +80,7 @@ type CreateChannelResponse struct {
 type GetChannelMessagesRequest struct {
 	ChannelID    *uint64 `json:"channel_id,string"`
 	FromUnixTime *uint64 `json:"from_unix_time"`
-	PageSize   *uint32 `json:"page_size"`
+	PageSize     *uint32 `json:"page_size"`
 }
 
 type GetChannelMessagesResponse struct {
@@ -118,6 +118,12 @@ type AddUsersToChannelResponse struct {
 	DebugMsg *string `json:"debug_msg"`
 }
 
+type CreateSocketRequest struct{}
+
+type CreateSocketResponse struct {
+	DebugMsg *string `json:"debug_msg"`
+}
+
 type User struct {
 	UserID       *uint64 `json:"user_id,string"`
 	UserName     *string `json:"username"`
@@ -138,6 +144,19 @@ type Message struct {
 	Content   *string `json:"content"`
 	CreatedAt *uint64 `json:"created_at"`
 	Sender    *User   `json:"sender"`
+}
+
+type EventType uint32
+
+const (
+	ServerEvent EventType = iota
+	ClientSendMsgEvent
+	ClientJoinChannelEvent
+)
+
+type SocketMessage struct {
+	EventType uint32      `json:"event_type"`
+	Message   interface{} `json:"message"`
 }
 
 type Uint64Str uint64

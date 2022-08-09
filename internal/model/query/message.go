@@ -5,7 +5,7 @@ import "strings"
 type MessageQuery struct {
 	channelIDs []*uint64
 	fromTime   *uint64
-	pageSize *uint32
+	pageSize   *uint32
 	id         *uint64
 }
 

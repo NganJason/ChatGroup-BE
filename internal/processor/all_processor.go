@@ -12,6 +12,7 @@ type ProcessorConfig struct {
 	Req       interface{}
 	Resp      interface{}
 	NeedAuth  bool
+	Socket    bool
 }
 
 func GetAllProcessors() []ProcessorConfig {
@@ -101,6 +102,14 @@ func GetAllProcessors() []ProcessorConfig {
 			Req:       &vo.CreateMessageRequest{},
 			Resp:      &vo.CreateMessageResponse{},
 			NeedAuth:  true,
+		},
+		{
+			Path:      "/api/socket/create",
+			Processor: CreateSocketProcessor,
+			Req:       &vo.CreateSocketRequest{},
+			Resp:      &vo.CreateSocketResponse{},
+			NeedAuth:  true,
+			Socket:    true,
 		},
 	}
 }

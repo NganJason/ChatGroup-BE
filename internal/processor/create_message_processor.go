@@ -11,6 +11,7 @@ import (
 	"github.com/NganJason/ChatGroup-BE/internal/utils"
 	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
 	"github.com/NganJason/ChatGroup-BE/pkg/cookies"
+	"github.com/NganJason/ChatGroup-BE/pkg/socket"
 	"github.com/NganJason/ChatGroup-BE/vo"
 )
 
@@ -107,6 +108,16 @@ func (p *createMessageProcessor) process() error {
 	if err != nil {
 		return err
 	}
+
+	// Handle broadcast asynchronously
+	go func() {
+		h.BroadcastMessage(
+			socket.GetHub(),
+			p.userID,
+			p.req.ChannelID,
+			message,
+		)
+	}()
 
 	p.resp.Message = message
 

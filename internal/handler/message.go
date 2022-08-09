@@ -9,6 +9,8 @@ import (
 	"github.com/NganJason/ChatGroup-BE/internal/model/db"
 	"github.com/NganJason/ChatGroup-BE/internal/utils"
 	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
+	"github.com/NganJason/ChatGroup-BE/pkg/clog"
+	"github.com/NganJason/ChatGroup-BE/pkg/socket"
 	"github.com/NganJason/ChatGroup-BE/vo"
 )
 
@@ -122,6 +124,56 @@ func (h *MessageHandler) CreateMessage(
 	}
 
 	return utils.DBMessageToVo(message, userIDMap), nil
+}
+
+func (h *MessageHandler) BroadcastMessage(
+	hub socket.Hub,
+	senderID *uint64,
+	channelID *uint64,
+	message *vo.Message,
+) {
+	if hub == nil {
+		clog.Error(
+			h.ctx,
+			"hub is nil in broadcastMessage",
+		)
+		return
+	}
+
+	userChannels, err := h.userChannelDM.GetUserChannels(
+		nil,
+		channelID,
+		nil,
+	)
+	if err != nil {
+		clog.Error(
+			h.ctx,
+			fmt.Sprintf("get userChannel in broadcastMsg err=%s", err.Error()),
+		)
+		return
+	}
+
+	recipientIDs := make([]uint64, 0)
+	for _, d := range userChannels {
+		if d.UserID == nil {
+			continue
+		}
+
+		if *d.UserID == *senderID {
+			continue
+		}
+
+		recipientIDs = append(recipientIDs, *d.UserID)
+	}
+
+	hub.Broadcast(
+		*senderID,
+		recipientIDs,
+		vo.SocketMessage{
+			EventType: uint32(vo.ClientSendMsgEvent),
+			Message:   message,
+		},
+	)
 }
 
 func (h *MessageHandler) userIDMapFromMessages(messages []*db.Message) (map[uint64]*db.User, error) {

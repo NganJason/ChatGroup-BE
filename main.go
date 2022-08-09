@@ -9,6 +9,7 @@ import (
 	"github.com/NganJason/ChatGroup-BE/internal/config"
 	"github.com/NganJason/ChatGroup-BE/internal/processor"
 	"github.com/NganJason/ChatGroup-BE/pkg/clog"
+	"github.com/NganJason/ChatGroup-BE/pkg/socket"
 	"github.com/NganJason/ChatGroup-BE/pkg/wrapper"
 	"github.com/rs/cors"
 )
@@ -17,6 +18,7 @@ func main() {
 	ctx := context.Background()
 	mux := http.NewServeMux()
 	config.InitConfig()
+	socket.InitHub()
 
 	for _, proc := range processor.GetAllProcessors() {
 		mux.HandleFunc(
@@ -26,6 +28,7 @@ func main() {
 				proc.Req,
 				proc.Resp,
 				proc.NeedAuth,
+				proc.Socket,
 			),
 		)
 	}

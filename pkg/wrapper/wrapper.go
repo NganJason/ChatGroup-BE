@@ -10,9 +10,11 @@ import (
 	"time"
 
 	"github.com/NganJason/ChatGroup-BE/internal/middleware"
+	"github.com/NganJason/ChatGroup-BE/internal/utils"
 	"github.com/NganJason/ChatGroup-BE/pkg/cerr"
 	"github.com/NganJason/ChatGroup-BE/pkg/clog"
 	"github.com/NganJason/ChatGroup-BE/pkg/cookies"
+	"github.com/gorilla/websocket"
 )
 
 type Processor func(ctx context.Context, req, resp interface{}) error
@@ -21,17 +23,30 @@ func WrapProcessor(
 	proc Processor,
 	req, resp interface{},
 	needAuth bool,
+	socket bool,
 ) http.HandlerFunc {
-	if needAuth {
-		return middleware.CheckAuthMiddleware(Wrapper(proc, req, resp))
+	if socket && needAuth {
+		return middleware.CheckAuthMiddleware(
+			middleware.CreateSocketMiddleware(
+				Wrapper(proc, req, resp, socket),
+			),
+		)
+	}
+	if socket {
+		return middleware.CreateSocketMiddleware(Wrapper(proc, req, resp, socket))
 	}
 
-	return Wrapper(proc, req, resp)
+	if needAuth {
+		return middleware.CheckAuthMiddleware(Wrapper(proc, req, resp, socket))
+	}
+
+	return Wrapper(proc, req, resp, socket)
 }
 
 func Wrapper(
 	proc Processor,
 	req, resp interface{},
+	socket bool,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		newReq := reflect.New(reflect.TypeOf(req).Elem()).Interface()
@@ -68,30 +83,39 @@ func Wrapper(
 
 		setCookie(ctx, w)
 
-		writeToClient(ctx, w, newResp, nil)
+		if !socket {
+			writeToClient(ctx, w, newResp, nil)
+		}
 	}
 }
 
 func writeToClient(ctx context.Context, w http.ResponseWriter, resp interface{}, err error) {
-	w.Header().Set("Content-Type", "application/json")
-
-	if err != nil {
-		code := cerr.Code(err)
-		w.WriteHeader(code)
-
-		setDebugMessage(ctx, resp, err.Error())
-	} else {
-		w.WriteHeader(http.StatusOK)
-	}
-
+	setDebugMessage(ctx, resp, err)
 	jsonResp, _ := json.Marshal(resp)
-	w.Write(jsonResp)
+
+	socketConn := ctx.Value(utils.SocketCtxKey)
+	if socketConn == nil {
+		if err != nil {
+			code := cerr.Code(err)
+			w.WriteHeader(code)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonResp)
+	} else {
+		conn, _ := socketConn.(*websocket.Conn)
+		conn.WriteMessage(websocket.BinaryMessage, jsonResp)
+	}
 }
 
-func setDebugMessage(ctx context.Context, resp interface{}, msg string) {
-	if resp == nil {
+func setDebugMessage(ctx context.Context, resp interface{}, err error) {
+	if resp == nil || err == nil {
 		return
 	}
+
+	msg := err.Error()
 
 	debugMsgField := "DebugMsg"
 	structField, found := reflect.TypeOf(resp).Elem().FieldByName(debugMsgField)

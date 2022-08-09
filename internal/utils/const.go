@@ -7,5 +7,6 @@ const (
 )
 
 const (
-	CookieKey = "auth_app_cookie"
+	CookieKey    = "auth_app_cookie"
+	SocketCtxKey = "socket_conn"
 )

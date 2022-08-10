@@ -124,6 +124,13 @@ type CreateSocketResponse struct {
 	DebugMsg *string `json:"debug_msg"`
 }
 
+type UploadImageRequest struct{}
+
+type UploadImageResponse struct {
+	DebugMsg *string `json:"debug_msg"`
+	Url      *string `json:"url"`
+}
+
 type User struct {
 	UserID       *uint64 `json:"user_id,string"`
 	UserName     *string `json:"username"`

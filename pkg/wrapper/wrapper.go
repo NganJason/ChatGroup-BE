@@ -24,29 +24,68 @@ func WrapProcessor(
 	req, resp interface{},
 	needAuth bool,
 	socket bool,
+	file bool,
+	getFile bool,
 ) http.HandlerFunc {
 	if socket && needAuth {
+		if socket {
+			return middleware.CheckAuthMiddleware(
+				middleware.CreateSocketMiddleware(
+					middleware.ParseFileMiddleware(
+						Wrapper(proc, req, resp, socket, file),
+					),
+				),
+			)
+		}
+
 		return middleware.CheckAuthMiddleware(
 			middleware.CreateSocketMiddleware(
-				Wrapper(proc, req, resp, socket),
+				Wrapper(proc, req, resp, socket, file),
 			),
 		)
 	}
 	if socket {
-		return middleware.CreateSocketMiddleware(Wrapper(proc, req, resp, socket))
+		if file {
+			middleware.CreateSocketMiddleware(
+				middleware.ParseFileMiddleware(
+					Wrapper(proc, req, resp, socket, file),
+				),
+			)
+		}
+
+		return middleware.CreateSocketMiddleware(
+			Wrapper(proc, req, resp, socket, file),
+		)
 	}
 
 	if needAuth {
-		return middleware.CheckAuthMiddleware(Wrapper(proc, req, resp, socket))
+		if file {
+			return middleware.CheckAuthMiddleware(
+				middleware.ParseFileMiddleware(
+					Wrapper(proc, req, resp, socket, file),
+				),
+			)
+		}
+
+		return middleware.CheckAuthMiddleware(
+			Wrapper(proc, req, resp, socket, file),
+		)
 	}
 
-	return Wrapper(proc, req, resp, socket)
+	if getFile {
+		return middleware.GetImageMiddleware(
+			func(w http.ResponseWriter, r *http.Request) {},
+		)
+	}
+
+	return Wrapper(proc, req, resp, socket, file)
 }
 
 func Wrapper(
 	proc Processor,
 	req, resp interface{},
 	socket bool,
+	file bool,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		newReq := reflect.New(reflect.TypeOf(req).Elem()).Interface()

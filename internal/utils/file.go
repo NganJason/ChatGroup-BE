@@ -15,3 +15,16 @@ func GetDotEnvVariable(key string) (string, error) {
 
 	return os.Getenv(key), nil
 }
+
+func IsDirExist(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+
+	if os.IsNotExist(err) {
+		return false
+	}
+
+	return false
+}

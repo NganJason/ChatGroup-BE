@@ -13,6 +13,8 @@ type ProcessorConfig struct {
 	Resp      interface{}
 	NeedAuth  bool
 	Socket    bool
+	File      bool
+	GetFile   bool
 }
 
 func GetAllProcessors() []ProcessorConfig {
@@ -110,6 +112,18 @@ func GetAllProcessors() []ProcessorConfig {
 			Resp:      &vo.CreateSocketResponse{},
 			NeedAuth:  true,
 			Socket:    true,
+		},
+		{
+			Path:      "/api/user/upload_image",
+			Processor: UploadImageProcessor,
+			Req:       &vo.UploadImageRequest{},
+			Resp:      &vo.UploadImageResponse{},
+			NeedAuth:  true,
+			File:      true,
+		},
+		{
+			Path:    "/api/user/get_image",
+			GetFile: true,
 		},
 	}
 }

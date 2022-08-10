@@ -29,6 +29,8 @@ func main() {
 				proc.Resp,
 				proc.NeedAuth,
 				proc.Socket,
+				proc.File,
+				proc.GetFile,
 			),
 		)
 	}

@@ -78,6 +78,12 @@ func (dm *UserDM) GetUser(
 		)
 	}
 
+	if user.PhotoURL != nil {
+		user.PhotoURL = utils.StrPtr(
+			utils.GetImgUrl(dm.ctx, *user.PhotoURL),
+		)
+	}
+
 	return &user, nil
 }
 
@@ -132,6 +138,12 @@ func (dm *UserDM) GetUsers(userIDs []*uint64) (users []*db.User, err error) {
 			)
 		}
 
+		if user.PhotoURL != nil {
+			user.PhotoURL = utils.StrPtr(
+				utils.GetImgUrl(dm.ctx, *user.PhotoURL),
+			)
+		}
+
 		users = append(users, &user)
 	}
 
@@ -179,6 +191,12 @@ func (dm *UserDM) CreateUser(req *CreateUserReq) (user *db.User, err error) {
 		)
 	}
 
+	if user.PhotoURL != nil {
+		user.PhotoURL = utils.StrPtr(
+			utils.GetImgUrl(dm.ctx, *user.PhotoURL),
+		)
+	}
+
 	return user, nil
 }
 
@@ -208,7 +226,7 @@ func (dm *UserDM) UpdateUser(req *UpdateUserReq) (user *db.User, err error) {
 	wheres, args := q.Build()
 	finalQuery := baseQuery + wheres + "FOR UPDATE"
 
-	var existingUser *db.User
+	var existingUser db.User
 	err = tx.QueryRowContext(
 		dm.ctx,
 		finalQuery,
@@ -217,9 +235,9 @@ func (dm *UserDM) UpdateUser(req *UpdateUserReq) (user *db.User, err error) {
 		&existingUser.ID,
 		&existingUser.UserID,
 		&existingUser.UserName,
-		&existingUser.EmailAddress,
 		&existingUser.HashedPassword,
 		&existingUser.Salt,
+		&existingUser.EmailAddress,
 		&existingUser.PhotoURL,
 		&existingUser.CreatedAt,
 		&existingUser.UpdatedAt,
@@ -231,7 +249,7 @@ func (dm *UserDM) UpdateUser(req *UpdateUserReq) (user *db.User, err error) {
 		)
 	}
 
-	if existingUser == nil {
+	if existingUser.UserID == nil {
 		return nil, cerr.New(
 			"user does not exist for update",
 			http.StatusBadRequest,
@@ -264,7 +282,7 @@ func (dm *UserDM) UpdateUser(req *UpdateUserReq) (user *db.User, err error) {
 		`
 		UPDATE %s
 		SET username = ?, hashed_password = ?, salt = ?, email_address = ?, photo_url = ?
-		WHERE user_id = ?,
+		WHERE user_id = ?
 		`,
 		dm.getTableName(),
 	)
@@ -294,7 +312,13 @@ func (dm *UserDM) UpdateUser(req *UpdateUserReq) (user *db.User, err error) {
 		)
 	}
 
-	return existingUser, nil
+	if existingUser.PhotoURL != nil {
+		existingUser.PhotoURL = utils.StrPtr(
+			utils.GetImgUrl(dm.ctx, *existingUser.PhotoURL),
+		)
+	}
+
+	return &existingUser, nil
 }
 
 func (dm *UserDM) SearchUsers(
@@ -343,6 +367,12 @@ func (dm *UserDM) SearchUsers(
 			return nil, cerr.New(
 				fmt.Sprintf("query users from db err=%s", err.Error()),
 				http.StatusBadGateway,
+			)
+		}
+
+		if user.PhotoURL != nil {
+			user.PhotoURL = utils.StrPtr(
+				utils.GetImgUrl(dm.ctx, *user.PhotoURL),
 			)
 		}
 

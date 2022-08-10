@@ -1,7 +1,12 @@
 package utils
 
 import (
+	"context"
 	"encoding/binary"
+	"fmt"
+	"net"
+	"net/http"
+	"strings"
 
 	uuid "github.com/google/uuid"
 )
@@ -32,4 +37,21 @@ func GenerateUUID() *uint64 {
 	id := binary.BigEndian.Uint64(byte)
 
 	return Uint64Ptr(id)
+}
+
+func GetServerAddress(ctx context.Context) string {
+	srvAddr := ctx.Value(http.LocalAddrContextKey).(net.Addr)
+
+	s := strings.Replace(srvAddr.String(), LocalHostIP, LocalHostAddr, 1)
+
+	return fmt.Sprintf("http://%s/", s)
+}
+
+func GetImgUrl(ctx context.Context, path string) string {
+	serverAddr := GetServerAddress(ctx)
+
+	stringList := strings.Split(path, "/")
+	imgPath := stringList[len(stringList)-1]
+
+	return fmt.Sprintf("%sapi/user/get_image?path=%s", serverAddr, imgPath)
 }

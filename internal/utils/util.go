@@ -41,10 +41,19 @@ func GenerateUUID() *uint64 {
 
 func GetServerAddress(ctx context.Context) string {
 	srvAddr := ctx.Value(http.LocalAddrContextKey).(net.Addr)
+	isLocalhost := false
 
-	s := strings.Replace(srvAddr.String(), LocalHostIP, LocalHostAddr, 1)
+	if strings.Contains(srvAddr.String(), LocalHostIP) {
+		isLocalhost = true
+	}
 
-	return fmt.Sprintf("http://%s/", s)
+	r := ctx.Value("httpRequest").(*http.Request)
+
+	if isLocalhost {
+		return fmt.Sprintf("http://%s/", r.Host)
+	}
+
+	return fmt.Sprintf("https://%s/", r.Host)
 }
 
 func GetImgUrl(ctx context.Context, path string) string {

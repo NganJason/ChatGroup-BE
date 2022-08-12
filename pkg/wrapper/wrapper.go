@@ -96,6 +96,8 @@ func Wrapper(
 			strconv.FormatUint(uint64(time.Now().Unix()), 10),
 		)
 
+		ctx = context.WithValue(ctx, "httpRequest", r)
+
 		err := cerr.GetErrFromCtx(ctx)
 		if err != nil {
 			writeToClient(ctx, w, newResp, err)

@@ -47,7 +47,10 @@ func GetServerAddress(ctx context.Context) string {
 		isLocalhost = true
 	}
 
-	r := ctx.Value("httpRequest").(*http.Request)
+	r, ok := ctx.Value("httpRequest").(*http.Request)
+	if !ok {
+		return ""
+	}
 
 	if isLocalhost {
 		return fmt.Sprintf("http://%s/", r.Host)

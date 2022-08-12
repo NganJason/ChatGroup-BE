@@ -28,7 +28,7 @@ func WrapProcessor(
 	getFile bool,
 ) http.HandlerFunc {
 	if socket && needAuth {
-		if socket {
+		if file {
 			return middleware.CheckAuthMiddleware(
 				middleware.CreateSocketMiddleware(
 					middleware.ParseFileMiddleware(

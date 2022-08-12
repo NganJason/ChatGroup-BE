@@ -38,7 +38,7 @@ func main() {
 	clog.SetMinLogLevel(clog.LevelInfo)
 	c := cors.New(
 		cors.Options{
-			AllowedOrigins:   []string{"http://localhost:3000"},
+			AllowedOrigins:   []string{"https://delicate-queijadas-d1ee5b.netlify.app", "http://localhost:3000"},
 			AllowCredentials: true,
 			AllowedMethods:   []string{"POST", "GET", "OPTIONS"},
 		},

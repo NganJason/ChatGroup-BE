@@ -3,6 +3,7 @@ package cookies
 import (
 	"context"
 	"net/http"
+	"time"
 )
 
 type cookieOption func(*http.Cookie)
@@ -77,6 +78,7 @@ func CreateCookie(value string, options ...cookieOption) *http.Cookie {
 		Value:    value,
 		Path:     "/",
 		MaxAge:   10 * 60,
+		Expires:  time.Now().Add(1 * time.Hour),
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode,
